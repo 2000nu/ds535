@@ -18,7 +18,7 @@ We first deal with these files:
 
 I put "TODO" in models/social/idea_mhcn.py, so to-do lists are:
 1. complete '_calculate_homophily_ratios'
-2. complete ''
+2. complete '_rewire_social_graph'
 3. complete 'cal_cl_loss'
 
 and I hope to fill in these files somedays:
