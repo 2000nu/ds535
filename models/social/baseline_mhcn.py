@@ -8,6 +8,7 @@ from models.model_utils import SpAdjEdgeDrop
 ######################################################
 import numpy as np
 from torch.utils.checkpoint import checkpoint
+from tqdm import tqdm
 ######################################################
 
 init = nn.init.xavier_uniform_
@@ -95,7 +96,7 @@ class BASELINE_MHCN(BaseModel):
         # Vectorized Jaccard similarity calculation between neighbors of user pairs
         homophily_ratios = []
         
-        for i, j in zip(row_indices, col_indices):
+        for i, j in tqdm(zip(row_indices, col_indices), desc='Computing Homophily', total=len(row_indices)):
             neighbors_i = user_neigh[i.item()]
             neighbors_j = user_neigh[j.item()]
             
@@ -251,6 +252,7 @@ class BASELINE_MHCN(BaseModel):
         row_sums_p = t.sparse.sum(H_p, dim=1).to_dense().unsqueeze(1)
         row_sums_p[row_sums_p == 0] = 1
         H_p_values = H_p.values() / row_sums_p[H_p.indices()[0]].squeeze()
+        
         H_p = t.sparse_coo_tensor(H_p.indices(), H_p_values, H_p.size())
 
         # Return the final matrices
@@ -317,10 +319,13 @@ class BASELINE_MHCN(BaseModel):
         Rewires the social graph based on the similarity between user embeddings.
         This is a placeholder function, and the rewiring strategy can be adjusted.
         """
+        
         trust_mat = self.data_handler.trust_mat
         new_trust_mat = self.data_handler._sparse_mx_to_torch_sparse_tensor(trust_mat).coalesce()
         
-        
+        if self.data_handler.epoch < 10:
+            return new_trust_mat
+
         user_embeds = self._encode_user_embeddings()
         # user_embeds = self.user_embeds.detach()
         
@@ -432,7 +437,7 @@ class BASELINE_MHCN(BaseModel):
 
             # M_matrices = checkpoint(self._build_motif_induced_adjacency_matrix, trust_mat, trn_mat, use_reentrant=False)
             M_matrices = self._build_motif_induced_adjacency_matrix(trust_mat, trn_mat)
-
+            
             self.data_handler.H_s = M_matrices[0]
             self.data_handler.H_j = M_matrices[1]
             self.data_handler.H_p = M_matrices[2]
@@ -509,11 +514,14 @@ class BASELINE_MHCN(BaseModel):
         neg1 = score(row_shuffle(user_embeds), edge_embeds)
         neg2 = score(row_col_shuffle(edge_embeds), user_embeds)
         local_ssl = -((pos-neg1).sigmoid().log()+(neg1-neg2).sigmoid().log()).sum()
+        
+        
 
         graph = edge_embeds.mean(0)
         pos = score(edge_embeds, graph)
         neg1 = score(row_col_shuffle(edge_embeds), graph)
         global_ssl = -(pos-neg1).sigmoid().log().sum()
+        
         return local_ssl + global_ssl
 
     def cal_loss(self, batch_data):
@@ -525,11 +533,14 @@ class BASELINE_MHCN(BaseModel):
         neg_embeds = item_embeds[negs]
         
         bpr_loss = cal_bpr_loss(anc_embeds, pos_embeds, neg_embeds)
+
         reg_loss = self.reg_weight * reg_params(self)
         ss_loss = 0
-        ss_loss += self._hierarchical_self_supervision(self._self_supervised_gating(user_embeds, 1), self.data_handler.H_s)
-        ss_loss += self._hierarchical_self_supervision(self._self_supervised_gating(user_embeds, 2), self.data_handler.H_j)
-        ss_loss += self._hierarchical_self_supervision(self._self_supervised_gating(user_embeds, 3), self.data_handler.H_p)
+        ss_loss1 = self._hierarchical_self_supervision(self._self_supervised_gating(user_embeds, 1), self.data_handler.H_s)
+        ss_loss2 = self._hierarchical_self_supervision(self._self_supervised_gating(user_embeds, 2), self.data_handler.H_j)
+        ss_loss3 = self._hierarchical_self_supervision(self._self_supervised_gating(user_embeds, 3), self.data_handler.H_p)
+        ss_loss = ss_loss1 + ss_loss2 + ss_loss3
+
         ss_loss *= self.ss_rate
         
         ######################################################
@@ -540,6 +551,7 @@ class BASELINE_MHCN(BaseModel):
         loss = bpr_loss + reg_loss + ss_loss + cl_loss
         losses = {'bpr_loss': bpr_loss, 'reg_loss': reg_loss, 'ss_loss': ss_loss, 
                   'cl_loss': cl_loss}
+
         
         # loss = bpr_loss + reg_loss + ss_loss
         # losses = {'bpr_loss': bpr_loss, 'reg_loss': reg_loss, 'ss_loss': ss_loss}

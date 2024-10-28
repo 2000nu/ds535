@@ -7,6 +7,8 @@ Basic Loss Functions
 def cal_bpr_loss(anc_embeds, pos_embeds, neg_embeds):
 	pos_preds = (anc_embeds * pos_embeds).sum(-1)
 	neg_preds = (anc_embeds * neg_embeds).sum(-1)
+ 
+
 	return t.sum(F.softplus(neg_preds - pos_preds))
 
 

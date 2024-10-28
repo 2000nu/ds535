@@ -11,18 +11,29 @@ class Logger(object):
     def __init__(self, log_configs=True):
         model_name = configs['model']['name']
         log_dir_path = './log/{}'.format(model_name)
-        if not os.path.exists(log_dir_path):
+        if not os.path.exists(log_dir_path) and configs['log']:
             os.makedirs(log_dir_path)
         self.logger = logging.getLogger('train_logger')
         self.logger.setLevel(logging.INFO)
         dataset_name = configs['data']['name']
-        if not configs['tune']['enable']:
-            log_file = logging.FileHandler('{}/{}_{}.log'.format(log_dir_path, dataset_name, get_local_time()), 'a', encoding='utf-8')
-        else:
-            log_file = logging.FileHandler('{}/{}-tune_{}.log'.format(log_dir_path, dataset_name, get_local_time()), 'a', encoding='utf-8')
+        
         formatter = logging.Formatter('%(asctime)s - %(message)s')
-        log_file.setFormatter(formatter)
-        self.logger.addHandler(log_file)
+        
+        if configs['log']:
+            # File handler if logging is enabled
+            if not configs['tune']['enable']:
+                log_file = logging.FileHandler(
+                    '{}/{}_{}.log'.format(log_dir_path, dataset_name, get_local_time()),
+                    'a', encoding='utf-8'
+                )
+            else:
+                log_file = logging.FileHandler(
+                    '{}/{}-tune_{}.log'.format(log_dir_path, dataset_name, get_local_time()),
+                    'a', encoding='utf-8'
+                )
+            log_file.setFormatter(formatter)
+            self.logger.addHandler(log_file)
+        
         if log_configs:
             self.log(configs)
 

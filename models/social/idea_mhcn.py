@@ -7,6 +7,7 @@ from models.base_model import BaseModel
 from models.model_utils import SpAdjEdgeDrop
 ######################################################
 import numpy as np
+from tqdm import tqdm
 ######################################################
 
 init = nn.init.xavier_uniform_
@@ -14,26 +15,23 @@ uniformInit = nn.init.uniform
 
 class IDEA_MHCN(BaseModel):
     def __init__(self, data_handler):
-        super(MHCN, self).__init__(data_handler)
+        super(IDEA_MHCN, self).__init__(data_handler)
         self.data_handler = data_handler
+        self._load_configs()
+        self._initialize_parameters()
+        self.is_training = True
+    
+    def _load_configs(self):
         self.layer_num = configs['model']['layer_num']
         self.reg_weight = configs['model']['reg_weight']
         self.ss_rate = configs['model']['ss_rate']
-        ######################################################
-        trn_mat = self.data_handler.trn_mat
-        trust_mat = self.data_handler.trust_mat
-        self.trn_mat = self.data_handler._sparse_mx_to_torch_sparse_tensor(trn_mat)
-        self.trust_mat = self.data_handler._sparse_mx_to_torch_sparse_tensor(trust_mat)
-        
         self.cl_weight = configs['model']['cl_weight']
-        self.zeta = configs['model']['zeta']
         self.temperature = configs['model']['temperature']
-        self.homophily_ratios = self._compute_homophily_ratios()
-        ######################################################
-        
+
+    def _initialize_parameters(self):
+        init = nn.init.xavier_uniform_
         self.user_embeds = nn.Parameter(init(t.empty(self.user_num, self.embedding_size)))
-        self.item_embeds = nn.Parameter(init(t.empty(self.item_num, self.embedding_size)))        
-        
+        self.item_embeds = nn.Parameter(init(t.empty(self.item_num, self.embedding_size)))
         self.gating1 = nn.Linear(self.embedding_size, self.embedding_size)
         self.gating2 = nn.Linear(self.embedding_size, self.embedding_size)
         self.gating3 = nn.Linear(self.embedding_size, self.embedding_size)
@@ -43,7 +41,12 @@ class IDEA_MHCN(BaseModel):
         self.sgating3 = nn.Linear(self.embedding_size, self.embedding_size)
         self.attn = nn.Parameter(init(t.empty(1, self.embedding_size)))
         self.attn_mat = nn.Parameter(init(t.empty(self.embedding_size, self.embedding_size)))
-        self.is_training = True
+        
+        trn_mat = self.data_handler.trn_mat
+        trust_mat = self.data_handler.trust_mat
+        self.trn_mat = self.data_handler._sparse_mx_to_torch_sparse_tensor(trn_mat)
+        self.trust_mat = self.data_handler._sparse_mx_to_torch_sparse_tensor(trust_mat)
+        
 
     def _self_gating(self, em, channel):
         if channel == 1:
@@ -78,9 +81,43 @@ class IDEA_MHCN(BaseModel):
         return mixed_embeds, score
 
     ######################################################
+    def _compute_one_homophily(item_embeds, items_A, items_B):
+        """
+        Compute homophily between two users (userA and userB) based on their connected items.
+        
+        Args:
+            item_embeds (torch.Tensor): Item embeddings matrix (shape: [num_items, embedding_dim]). This matrix is used to compute similarity between items based on user interactions.
+            items_A (list of int): List of item indices connected to userA.
+            items_B (list of int): List of item indices connected to userB.
+        
+        Returns:
+            float: Homophily value between items_A and items_B
+        """
+        
+        # Find unique items in each set (non-overlapping items)
+        intersection_size = len(set(items_A).intersection(set(items_B)))
+        union_size = len(set(items_A).union(set(items_B)))
+        
+        unique_A = list(set(items_A) - set(items_B))
+        unique_B = list(set(items_B) - set(items_A))
+        
+        # TODO: For each item in unique_A, find the maximum inner product with all items in unique_B and sum these values. Similarly, for each item in unique_B, find the maximum inner product with all items in unique_A and sum these values
+        max_similarities_A = ###
+        max_similarities_B = ###
+
+        numerator = intersection_size + max_similarities_A + max_similarities_B
+        denominator = union_size 
+        
+        homophily_value = numerator / denominator
+        return homophily_value
+    ######################################################
+
+
+
+    ######################################################
     def _compute_homophily_ratios(self, item_embeds):
         """
-        Compute edge-wise homophily ratios using item embeddings for user pairs in the trust matrix.
+        Compute edge-wise homophily ratios using item embeddings for user pairs in the trust matrix(social graph).
     
         Args:
         item_embeds (torch.Tensor): Item embeddings matrix (shape: [num_items, embedding_dim]). These embeddings are used to compute similarity between users based on their interactions with items.
@@ -89,16 +126,17 @@ class IDEA_MHCN(BaseModel):
         homophily_ratios (torch.Tensor): Tensor containing homophily ratios (similarities) for each edge in the social graph based on user-item interactions.
         """
 
-        trust_mat = self.trust_mat
-        trust_mat = trust_mat.coalesce() 
+        trust_mat = self.trust_mat.coalesce()
         row_indices = trust_mat.indices()[0]
         col_indices = trust_mat.indices()[1]
         homophily_ratios = []
         
-        for i, j in zip(row_indices, col_indices):
-            # TODO: calculate similarity between users based on item_embeds 
+        for userA, userB in tqdm(zip(row_indices, col_indices), desc='Computing Homophily', total=len(row_indices)):
+            items_A = self.data_handler.get_connected_items(userA.item())
+            items_B = self.data_handler.get_connected_items(userB.item())
             
-            similarity = 
+            similarity = self._compute_one_homophily(item_embeds, items_A, items_B) # TODO: complete this function
+            
             homophily_ratios.append(similarity)
         
         return t.tensor(homophily_ratios)
@@ -220,21 +258,28 @@ class IDEA_MHCN(BaseModel):
         """
         Rewires the social graph based on the similarity between user embeddings.
         This is a placeholder function, and the rewiring strategy can be adjusted.
+        
+        Returns:
+            torch.sparse.Tensor: A new trust matrix with updated edge weights based on homophily ratios.
         """
+        # Retrieve the existing trust matrix and user/item embeddings
         trust_mat = self.trust_mat
         user_embeds = self.user_embeds
         item_embeds = self.item_embeds
-        homophily_ratios = self._compute_homophily_ratios(item_embeds)
         
+        # Compute homophily ratios based on item embeddings for each user pair in the trust matrix
+        self.homophily_ratios = self._compute_homophily_ratios(item_embeds)
+        
+        # Get indices of existing edges in the trust matrix
         indices = trust_mat.indices()
-        row_indices = indices[0].long()
-        col_indices = indices[1].long()
+        row_indices = indices[0].long()  # Source user indices
+        col_indices = indices[1].long()  # Target user indices
         
         new_values = []
         for i, j in zip(row_indices, col_indices):
             # TODO: make social graph with weighted edges based on homophily ratios
             
-            new_value = 
+            new_value = ###
             new_values.append(new_value)
 
         new_trust_mat = t.sparse_coo_tensor(indices, new_values, trust_mat.size(), dtype=t.float32)
@@ -247,20 +292,20 @@ class IDEA_MHCN(BaseModel):
     def cal_cl_loss(self, user_embeds, ancs):
         """
         Calculate the MIL NCE loss based on homophily ratios and InfoNCE.
+        
         Args:
-            user_embeds (torch.Tensor): User embeddings
+            user_embeds (torch.Tensor): User embeddings.
+            ancs (torch.Tensor): Ancestors or reference nodes for calculating contrastive loss.
+            
         Returns:
-            cl_loss (torch.Tensor): Contrastive learning loss (MIL NCE)
+            cl_loss (torch.Tensor): Contrastive learning loss 
         """
+        # TODO: check the semantic of CL loss
+        
         device = configs['device']
         homophily_ratios = self.homophily_ratios.to(device)
         
-        h_min, h_max = homophily_ratios.min(), homophily_ratios.max()
-        
-        epsilon = (self.zeta - h_min) / (h_max - h_min + 1e-8) 
-        
-        
-        trust_mat = self.data_handler._sparse_mx_to_torch_sparse_tensor(self.data_handler.trust_mat).coalesce()
+        trust_mat = self.trust_mat.coalesce()
         row_indices = trust_mat.indices()[0].to(device) 
         col_indices = trust_mat.indices()[1].to(device)
         
@@ -270,22 +315,29 @@ class IDEA_MHCN(BaseModel):
             z_u = user_embeds[u] 
             neighbors_u = col_indices[row_indices == u]
             
+            # Skip if no neighbors are present
             if neighbors_u.numel() == 0:
                 continue  
             
-            homophily_u = homophily_ratios[row_indices == u] 
-            pos_samples = neighbors_u[homophily_u > epsilon] 
-            neg_samples = neighbors_u[homophily_u <= epsilon] 
-            
-            if pos_samples.numel() == 0 or neg_samples.numel() == 0:
-                continue
-            
-            pos_sum = t.sum(t.exp(t.cosine_similarity(z_u.unsqueeze(0), user_embeds[pos_samples], dim=1) / self.temperature))
-            neg_sum = t.sum(t.exp(t.cosine_similarity(z_u.unsqueeze(0), user_embeds[neg_samples], dim=1) / self.temperature))
-            
-            cl_loss_u = -t.log(pos_sum / (pos_sum + neg_sum + 1e-8))  
-            cl_loss += cl_loss_u  
+            # Select the same number of non-neighbors as neighbors_u
+            all_nodes = t.arange(user_embeds.size(0), device=device)
+            non_neighbors_u = all_nodes[~t.isin(all_nodes, neighbors_u)]
+            non_neighbors_u = non_neighbors_u[t.randperm(non_neighbors_u.size(0))[:neighbors_u.numel()]]
 
+            # Calculate homophily-weighted similarity for each neighbor in neighbors_u
+            homophily_u = homophily_ratios[row_indices == u]
+            similarities_neighbors = t.exp(t.cosine_similarity(z_u.unsqueeze(0), user_embeds[neighbors_u], dim=1))
+            numerator = t.sum(homophily_u * similarities_neighbors)
+
+            # Calculate similarity for each non-neighbor in non_neighbors_u
+            similarities_non_neighbors = t.exp(t.cosine_similarity(z_u.unsqueeze(0), user_embeds[non_neighbors_u], dim=1))
+
+            # Calculate denominator as sum of similarities with neighbors and non-neighbors
+            denominator = t.sum(similarities_neighbors) + t.sum(similarities_non_neighbors)
+
+            # Calculate -log of the probability and add to contrastive loss
+            cl_loss_u = -t.log(numerator / (denominator + 1e-8))  # Small epsilon to prevent division by zero
+            cl_loss += cl_loss_u
 
         return cl_loss
     ######################################################
@@ -393,8 +445,11 @@ class IDEA_MHCN(BaseModel):
         anc_embeds = user_embeds[ancs]
         pos_embeds = item_embeds[poss]
         neg_embeds = item_embeds[negs]
+        
         bpr_loss = cal_bpr_loss(anc_embeds, pos_embeds, neg_embeds)
+        
         reg_loss = self.reg_weight * reg_params(self)
+        
         ss_loss = 0
         ss_loss += self._hierarchical_self_supervision(self._self_supervised_gating(user_embeds, 1), self.data_handler.H_s)
         ss_loss += self._hierarchical_self_supervision(self._self_supervised_gating(user_embeds, 2), self.data_handler.H_j)
@@ -402,9 +457,7 @@ class IDEA_MHCN(BaseModel):
         ss_loss *= self.ss_rate
         
         ######################################################
-        homophily_ratios = self._compute_homophily_ratios(item_embeds)
-        
-        cl_loss = self.cl_weight * self.cal_cl_loss(user_embeds, )
+        cl_loss = self.cl_weight * self.cal_cl_loss(user_embeds, ancs)
         ######################################################
         
         

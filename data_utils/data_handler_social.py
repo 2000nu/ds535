@@ -27,7 +27,7 @@ class DataHandlerSocial:
 		self.trn_file = predir + 'trn_mat.pkl'
 		self.tst_file = predir + 'tst_mat.pkl'
 		self.trust_file = predir + 'trust_mat.pkl'
-		self.category_file = predir + 'category.pkl'
+		# self.category_file = predir + 'category.pkl'
 		if configs['model']['name'] == 'smin':
 			self.metapath_file = predir + 'metapath.pkl'
 			self.subgraph_file = predir + '2hop_ui_subgraph.pkl'
@@ -378,10 +378,10 @@ class DataHandlerSocial:
 		trn_mat = self._load(self.trn_file)
 		tst_mat = self._load(self.tst_file)
 		trust_mat = self._load(self.trust_file)
-		category_mat = self._load(self.category_file)
+		# category_mat = self._load(self.category_file)
 		self.trn_mat = trn_mat
 		self.trust_mat = trust_mat
-		category_dict = self._create_category_dict(category_mat)
+		# category_dict = self._create_category_dict(category_mat)
 		configs['data']['user_num'], configs['data']['item_num'] = trn_mat.shape
 		
 		if configs['train']['loss'] == 'pairwise':
@@ -562,3 +562,11 @@ class DataHandlerSocial:
 			social_trn_data = SocialPairwiseTrnData(trust_mat)
 			dsl_trn_data = DSLTrnData(trn_data, social_trn_data)
 			self.train_dataloader = data.DataLoader(dsl_trn_data, batch_size=configs['train']['batch_size'], shuffle=True, num_workers=0)
+
+	def get_connected_items(self, user_id):
+		if not hasattr(self, 'trn_mat') or not sp.isspmatrix_coo(self.trn_mat):
+			raise ValueError("Training matrix (trn_mat) not loaded or not in COO format.")
+			
+		# Extract item indices connected to the specified user
+		connected_items = self.trn_mat.col[self.trn_mat.row == user_id]
+		return connected_items.tolist()

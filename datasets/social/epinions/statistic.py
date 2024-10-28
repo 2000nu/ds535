@@ -7,10 +7,11 @@ def load_pkl(file):
 
 if __name__=="__main__":
     category = load_pkl('category.pkl')
-    # print(category)
 
     trn_mat = load_pkl('trn_mat.pkl')
-    print(len(trn_mat.data))
+    print(trn_mat)
+    exit()
     
     tst_mat = load_pkl('tst_mat.pkl')
-    print(len(tst_mat.data))
+    print(tst_mat)
+    exit()

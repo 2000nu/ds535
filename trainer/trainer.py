@@ -60,6 +60,7 @@ class Trainer(object):
         #############################################
         # rewired_trust_mat = model._rewire_social_graph()
         # model.rewired_trust_mat = rewired_trust_mat
+        self.data_handler.epoch = epoch_idx
         #############################################
 
         # for recording loss
@@ -72,6 +73,7 @@ class Trainer(object):
         for _, tem in tqdm(enumerate(train_dataloader), desc='Training Recommender', total=len(train_dataloader)):
             self.optimizer.zero_grad()
             batch_data = list(map(lambda x: x.long().to(configs['device']), tem))
+            
             loss, loss_dict = model.cal_loss(batch_data)
             ep_loss += loss.item()
             
