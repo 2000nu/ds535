@@ -564,7 +564,7 @@ class DataHandlerSocial:
 			self.train_dataloader = data.DataLoader(dsl_trn_data, batch_size=configs['train']['batch_size'], shuffle=True, num_workers=0)
 
 	def get_connected_items(self, user_id):
-		if not hasattr(self, 'trn_mat') or not sp.isspmatrix_coo(self.trn_mat):
+		if not hasattr(self, 'trn_mat') or not sp.isspmatrix_coo(self.trn_mat): # self.trn_mat = scipy.sparse.coo_mat
 			raise ValueError("Training matrix (trn_mat) not loaded or not in COO format.")
 			
 		# Extract item indices connected to the specified user
