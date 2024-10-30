@@ -80,7 +80,7 @@ class IDEA_MHCN(BaseModel):
             mixed_embeds += t.t(t.multiply(t.t(score)[i], t.t(channel_embeds[i])))
         return mixed_embeds, score
 
-######################################################
+    ######################################################
     def _compute_one_homophily(self, item_embeds, items_A, items_B):
         """
         Compute homophily between two users (userA and userB) based on their connected items.
