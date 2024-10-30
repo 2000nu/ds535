@@ -256,30 +256,34 @@ class IDEA_MHCN(BaseModel):
     ######################################################
     def _rewire_social_graph(self):
         """
-        Rewires the social graph based on the similarity between user embeddings.
+        Rewire(Reweight) the social graph based on the similarity between user embeddings.
         This is a placeholder function, and the rewiring strategy can be adjusted.
         
         Returns:
             torch.sparse.Tensor: A new trust matrix with updated edge weights based on homophily ratios.
         """
         # Retrieve the existing trust matrix and user/item embeddings
-        trust_mat = self.trust_mat
-        user_embeds = self.user_embeds
-        item_embeds = self.item_embeds
+        trust_mat = self.trust_mat # [N, N]
+        user_embeds = self.user_embeds # [N, D1]
+        item_embeds = self.item_embeds # [M, D2]
         
         # Compute homophily ratios based on item embeddings for each user pair in the trust matrix
         self.homophily_ratios = self._compute_homophily_ratios(item_embeds)
         
         # Get indices of existing edges in the trust matrix
         indices = trust_mat.indices()
-        row_indices = indices[0].long()  # Source user indices
-        col_indices = indices[1].long()  # Target user indices
+        row_indices = indices[:, 0].long()  # Source user indices
+        col_indices = indices[:, 1].long()  # Target user indices
         
-        new_values = []
+        new_values = [] # should be 
         for i, j in zip(row_indices, col_indices):
             # TODO: make social graph with weighted edges based on homophily ratios
+            ### Ver. 1
+            new_value = self.homophily_ratios[i * trust_mat.shape[0] +j]
             
-            new_value = ###
+            ### Ver. 2 
+            new_value = self.homophily_ratios[i,j]
+            
             new_values.append(new_value)
 
         new_trust_mat = t.sparse_coo_tensor(indices, new_values, trust_mat.size(), dtype=t.float32)
