@@ -264,29 +264,15 @@ class IDEA_MHCN(BaseModel):
         """
         # Retrieve the existing trust matrix and user/item embeddings
         trust_mat = self.trust_mat # [N, N]
-        user_embeds = self.user_embeds # [N, D1]
-        item_embeds = self.item_embeds # [M, D2]
+        item_embeds = self.item_embeds # [M, D]
         
         # Compute homophily ratios based on item embeddings for each user pair in the trust matrix
-        self.homophily_ratios = self._compute_homophily_ratios(item_embeds)
+        self.homophily_ratios = self._compute_homophily_ratios(item_embeds) # [E]
         
-        # Get indices of existing edges in the trust matrix
+        # # Get indices of existing edges in the trust matrix
         indices = trust_mat.indices()
-        row_indices = indices[:, 0].long()  # Source user indices
-        col_indices = indices[:, 1].long()  # Target user indices
-        
-        new_values = [] # should be 
-        for i, j in zip(row_indices, col_indices):
-            # TODO: make social graph with weighted edges based on homophily ratios
-            ### Ver. 1
-            new_value = self.homophily_ratios[i * trust_mat.shape[0] +j]
-            
-            ### Ver. 2 
-            new_value = self.homophily_ratios[i,j]
-            
-            new_values.append(new_value)
 
-        new_trust_mat = t.sparse_coo_tensor(indices, new_values, trust_mat.size(), dtype=t.float32)
+        new_trust_mat = t.sparse_coo_tensor(indices, self.homophily_ratios, trust_mat.size(), dtype=t.float32)
         
         return new_trust_mat
     ######################################################
