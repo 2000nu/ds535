@@ -80,13 +80,13 @@ class IDEA_MHCN(BaseModel):
             mixed_embeds += t.t(t.multiply(t.t(score)[i], t.t(channel_embeds[i])))
         return mixed_embeds, score
 
-    ######################################################
-    def _compute_one_homophily(item_embeds, items_A, items_B):
+######################################################
+    def _compute_one_homophily(self, item_embeds, items_A, items_B):
         """
         Compute homophily between two users (userA and userB) based on their connected items.
         
         Args:
-            item_embeds (torch.Tensor): Item embeddings matrix (shape: [num_items, embedding_dim]). This matrix is used to compute similarity between items based on user interactions.
+            item_embeds (torch.Tensor): Normalized item embeddings matrix (shape: [num_items, embedding_dim]). This matrix is used to compute similarity between items based on user interactions.
             items_A (list of int): List of item indices connected to userA.
             items_B (list of int): List of item indices connected to userB.
         
@@ -102,8 +102,8 @@ class IDEA_MHCN(BaseModel):
         unique_B = list(set(items_B) - set(items_A))
         
         # TODO: For each item in unique_A, find the maximum inner product with all items in unique_B and sum these values. Similarly, for each item in unique_B, find the maximum inner product with all items in unique_A and sum these values
-        max_similarities_A = ###
-        max_similarities_B = ###
+        max_similarities_A = self._compute_sum_of_max_similarity(unique_A, unique_B, item_embeds)
+        max_similarities_B = self._compute_sum_of_max_similarity(unique_B, unique_A, item_embeds)
 
         numerator = intersection_size + max_similarities_A + max_similarities_B
         denominator = union_size 
@@ -112,6 +112,25 @@ class IDEA_MHCN(BaseModel):
         return homophily_value
     ######################################################
 
+    def _compute_sum_of_max_similarity(self, unique_item_list_target, unique_item_list_compare, embeds):
+        '''
+        (Input)
+        unique_item_list_target: unique item list for selected user in pair
+        unique_item_list_target: unique item list for remain user in pair
+        embeds : normalized item embedding (torch.tensor: dim(item_num, dim))
+
+        (Output)
+        sum_max_dot_product: for target user, calculate the sum of max similarity score for each unique item
+        '''
+        
+        target = embeds[unique_item_list_target]
+        comparision = embeds[unique_item_list_compare]
+        sim_between_items = t.matmul(target, comparision.T)
+
+        max_dot_product, _ = t.max(sim_between_items, dim=1)
+        sum_max_dot_product = t.sum(max_dot_product)
+
+        return sum_max_dot_product
 
 
     ######################################################
@@ -125,6 +144,7 @@ class IDEA_MHCN(BaseModel):
         Returns:
         homophily_ratios (torch.Tensor): Tensor containing homophily ratios (similarities) for each edge in the social graph based on user-item interactions.
         """
+        normalized_embeds = F.normalize(item_embeds, p=2, dim=1)
 
         trust_mat = self.trust_mat.coalesce()
         row_indices = trust_mat.indices()[0]
@@ -132,10 +152,10 @@ class IDEA_MHCN(BaseModel):
         homophily_ratios = []
         
         for userA, userB in tqdm(zip(row_indices, col_indices), desc='Computing Homophily', total=len(row_indices)):
-            items_A = self.data_handler.get_connected_items(userA.item())
+            items_A = self.data_handler.get_connected_items(userA.item()) # list type [item_idx_1, item_idx_2...]
             items_B = self.data_handler.get_connected_items(userB.item())
             
-            similarity = self._compute_one_homophily(item_embeds, items_A, items_B) # TODO: complete this function
+            similarity = self._compute_one_homophily(normalized_embeds, items_A, items_B) # TODO: complete this function
             
             homophily_ratios.append(similarity)
         
