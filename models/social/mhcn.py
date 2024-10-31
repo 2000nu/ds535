@@ -79,7 +79,6 @@ class MHCN(BaseModel):
 
 		for k in range(self.layer_num):
 			mixed_embed = self._channel_attention(user_embeds_c1, user_embeds_c2, user_embeds_c3)[0] + simp_user_embeds / 2
-
 			user_embeds_c1 = t.spmm(self.data_handler.H_s, user_embeds_c1)
 			norm_embeds = F.normalize(user_embeds_c1, p=2, dim=1)
 			all_embeds_c1 += [norm_embeds]

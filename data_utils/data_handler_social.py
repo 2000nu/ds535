@@ -541,7 +541,8 @@ class DataHandlerSocial:
 									num_nodes=multi_adj_time_norm.shape[0],
 									device=configs['device'])
 
-		elif configs['model']['name'] == 'mhcn':
+		# elif configs['model']['name'] == 'mhcn':
+		elif 'mhcn' in configs['model']['name']:
 			M_matrices = self._build_motif_induced_adjacency_matrix(trust_mat, trn_mat)
 			H_s = M_matrices[0]
 			self.H_s = self._sparse_mx_to_torch_sparse_tensor(H_s)
