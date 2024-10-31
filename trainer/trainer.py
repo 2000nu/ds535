@@ -57,12 +57,6 @@ class Trainer(object):
         train_dataloader = self.data_handler.train_dataloader
         train_dataloader.dataset.sample_negs()
 
-        #############################################
-        # rewired_trust_mat = model._rewire_social_graph()
-        # model.rewired_trust_mat = rewired_trust_mat
-        self.data_handler.epoch = epoch_idx
-        #############################################
-
         # for recording loss
         loss_log_dict = {}
         ep_loss = 0
@@ -70,11 +64,12 @@ class Trainer(object):
         # start this epoch
         model.train()
         
-        for _, tem in tqdm(enumerate(train_dataloader), desc='Training Recommender', total=len(train_dataloader)):
+        for i, tem in tqdm(enumerate(train_dataloader), desc='Training Recommender', total=len(train_dataloader)):
             self.optimizer.zero_grad()
             batch_data = list(map(lambda x: x.long().to(configs['device']), tem))
+            a = i % len(train_dataloader)
             
-            loss, loss_dict = model.cal_loss(batch_data)
+            loss, loss_dict = model.cal_loss(batch_data, a)
             ep_loss += loss.item()
             
             

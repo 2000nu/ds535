@@ -66,11 +66,11 @@ trust_mat = coo_matrix((trust_data, (trust_row, trust_col)), shape=(user_count, 
 
 
 # Save each matrix to the respective pkl file.
-with open('trn_mat.pkl', 'wb') as f:
+with open('../trn_mat.pkl', 'wb') as f:
     pickle.dump(trn_mat, f)
-with open('tst_mat.pkl', 'wb') as f:
+with open('../tst_mat.pkl', 'wb') as f:
     pickle.dump(tst_mat, f)
-with open('trust_mat.pkl', 'wb') as f:
+with open('../trust_mat.pkl', 'wb') as f:
     pickle.dump(trust_mat, f)
 
 # Mapping된 데이터를 저장할 파일 경로

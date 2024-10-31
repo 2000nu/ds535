@@ -8,7 +8,7 @@ def parse_configure():
     parser.add_argument('--dataset', type=str, default=None, help='Dataset name')
     parser.add_argument('--device', type=str, default='cuda', help='cpu or cuda')
     parser.add_argument('--cuda', type=str, default='0', help='Device number')
-    parser.add_argument('--log', action='store_true', help='Enable logging')
+    parser.add_argument('--log', action='store_true', help='Enable logging', default=True)
     parser.add_argument('--no-log', action='store_false', dest='log', help='Disable logging')
     
     args = parser.parse_args()

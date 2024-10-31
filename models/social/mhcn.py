@@ -141,7 +141,7 @@ class MHCN(BaseModel):
 		global_ssl = -(pos-neg1).sigmoid().log().sum()
 		return local_ssl + global_ssl
 
-	def cal_loss(self, batch_data):
+	def cal_loss(self, batch_data, a=None):
 		self.is_training = True
 		user_embeds, item_embeds = self.forward()
 		ancs, poss, negs = batch_data

@@ -8,6 +8,8 @@ from models.model_utils import SpAdjEdgeDrop
 ######################################################
 import numpy as np
 from tqdm import tqdm
+import os
+os.environ["PYTORCH_CUDA_ALLOC_CONF"] = "expandable_segments:True"
 ######################################################
 
 init = nn.init.xavier_uniform_
@@ -46,6 +48,8 @@ class IDEA_MHCN_V2(BaseModel):
         trust_mat = self.data_handler.trust_mat
         self.trn_mat = self.data_handler._sparse_mx_to_torch_sparse_tensor(trn_mat)
         self.trust_mat = self.data_handler._sparse_mx_to_torch_sparse_tensor(trust_mat)
+        self.trn_mat = self.trn_mat.coalesce().to(configs['device'])
+        self.trust_mat = self.trust_mat.coalesce().to(configs['device'])
         
 
     def _self_gating(self, em, channel):
@@ -80,7 +84,83 @@ class IDEA_MHCN_V2(BaseModel):
             mixed_embeds += t.t(t.multiply(t.t(score)[i], t.t(channel_embeds[i])))
         return mixed_embeds, score
 
+    ######################################################
+    def _compute_one_homophily(self, item_embeds, items_A, items_B):
+        """
+        Compute homophily between two users (userA and userB) based on their connected items.
+        
+        Args:
+            item_embeds (torch.Tensor): Normalized item embeddings matrix (shape: [num_items, embedding_dim]). This matrix is used to compute similarity between items based on user interactions.
+            items_A (list of int): List of item indices connected to userA.
+            items_B (list of int): List of item indices connected to userB.
+        
+        Returns:
+            float: Homophily value between items_A and items_B
+        """
+        
+        intersection_size = len(set(items_A).intersection(set(items_B)))
+        union_size = len(set(items_A).union(set(items_B)))
+        
+        unique_A = list(set(items_A) - set(items_B))
+        unique_B = list(set(items_B) - set(items_A))
+        
+        if unique_A and unique_B:
+            max_similarities = self._compute_sum_of_max_similarity(unique_A, unique_B, item_embeds)
+            homophily_value = (intersection_size + max_similarities) / union_size
+        else:
+            homophily_value = intersection_size / union_size
+        
+        return homophily_value
+    ######################################################
 
+    def _compute_sum_of_max_similarity(self, unique_item_list_target, unique_item_list_compare, embeds):
+        '''
+        (Input)
+        unique_item_list_target: unique item list for selected user in pair
+        unique_item_list_target: unique item list for remain user in pair
+        embeds : normalized item embedding (torch.tensor: dim(item_num, dim))
+
+        (Output)
+        sum_max_dot_product: for target user, calculate the sum of max similarity score for each unique item
+        '''
+        
+        target = embeds[unique_item_list_target]
+        comparision = embeds[unique_item_list_compare]
+        sim_between_items = t.matmul(target, comparision.T)
+
+        max_target, _ = t.max(sim_between_items, dim=1)
+        max_compare, _ = t.max(sim_between_items, dim=1)
+        sum_max_dot_product = t.sum(max_target) + t.sum(max_compare)
+
+        return sum_max_dot_product
+
+
+    ######################################################
+    def _compute_homophily_ratios(self):
+        """
+        Compute edge-wise homophily ratios using item embeddings for user pairs in the trust matrix(social graph).
+
+        Returns:
+        homophily_ratios (torch.Tensor): Tensor containing homophily ratios (similarities) for each edge in the social graph based on user-item interactions.
+        """
+        normalized_embeds = F.normalize(self.item_embeds, p=2, dim=1)
+
+        trust_mat = self.trust_mat.coalesce()
+        row_indices = trust_mat.indices()[0]
+        col_indices = trust_mat.indices()[1]
+        homophily_ratios = []
+        
+        for userA, userB in tqdm(zip(row_indices, col_indices), desc='Computing Homophily', total=len(row_indices)):
+            items_A = self.data_handler.get_connected_items(userA.item())
+            items_B = self.data_handler.get_connected_items(userB.item())
+            
+            similarity = self._compute_one_homophily(normalized_embeds, items_A, items_B)
+            
+            homophily_ratios.append(similarity)
+        
+        return t.tensor(homophily_ratios)
+    ######################################################
+    
     ######################################################
     def _build_motif_induced_adjacency_matrix(self, trust_mat, trn_mat):
         """
@@ -174,66 +254,43 @@ class IDEA_MHCN_V2(BaseModel):
         return norm_adj
     ######################################################
 
-
-
-    ######################################################
     def cal_cl_loss(self, user_embeds, item_embeds, ancs):
         """
         Calculate the MIL NCE loss based on homophily ratios and InfoNCE.
         
         Args:
             user_embeds (torch.Tensor): User embeddings.
+            item_embeds (torch.Tensor): Item embeddings.
             ancs (torch.Tensor): Ancestors or reference nodes for calculating contrastive loss.
             
         Returns:
             cl_loss (torch.Tensor): Contrastive learning loss 
         """
-
         item_embeds = F.normalize(item_embeds, p=2, dim=1)
         
         device = configs['device']
-        trn_mat = self.trn_mat.coalesce()
-        train_row_indices = trn_mat.indices()[0].to(device)
-        train_col_indices = trn_mat.indices()[1].to(device)
+        trn_mat = self.trn_mat
+        train_row_indices = trn_mat.indices()[0]
+        train_col_indices = trn_mat.indices()[1]
         
         
-        trust_mat = self.trust_mat.coalesce()
-        trust_row_indices = trust_mat.indices()[0].to(device) 
-        trust_col_indices = trust_mat.indices()[1].to(device)
+        trust_mat = self.trust_mat
+        trust_row_indices = trust_mat.indices()[0]
+        trust_col_indices = trust_mat.indices()[1]
+        homophily_ratios = self.homophily_ratios
         
         cl_loss = 0
-
+        
         for u in ancs:
-            z_u = user_embeds[u] 
-            items_u = train_col_indices[train_row_indices == u]
+            z_u = user_embeds[u]
             neighbors_u = trust_col_indices[trust_row_indices == u]
+            mask = (trust_row_indices == u) & (t.isin(trust_col_indices, neighbors_u))
             
-            embeddings_u = item_embeds[items_u]
-            embeddings_vs = t.empty((0, item_embeds.size(1)), device=device)
-            
-            homophily_u = []
-            indices = [0]
-            
-            for v in neighbors_u:
-                items_v = train_col_indices[train_row_indices == v]
-                indices.append(indices[-1] + len(items_v))
-                embeddings_v = item_embeds[items_v]
-                embeddings_vs = t.cat((embeddings_vs, embeddings_v), dim=0)
-            
-            
-            similarity_matrix = t.matmul(embeddings_u, embeddings_vs.T)
-            for i, v in enumerate(neighbors_u):
-                if indices[i] == indices[i+1]:
-                    continue
-                result_v = similarity_matrix[:, indices[i]:indices[i+1]]
-                homophily = result_v.max(dim=1).values.sum() + result_v.max(dim=0).values.sum()
-                homophily_u.append(homophily)
-            
-            
+            homophily_u = homophily_ratios[mask]
+
+            # Inclue u itself as a component of its neighbor
             neighbors_u = t.cat((neighbors_u, u.unsqueeze(0)), dim=0)
-            homophily_u.append(1)
-            
-            homophily_u = t.tensor(homophily_u, device=device)
+            homophily_u = t.cat((homophily_u, t.tensor([1], device=device)), dim=0)
             
             # Select the same number of non-neighbors as neighbors_u
             all_nodes = t.arange(user_embeds.size(0), device=device)
@@ -254,6 +311,91 @@ class IDEA_MHCN_V2(BaseModel):
             cl_loss += cl_loss_u
 
         return cl_loss
+
+    # for every iteration calculate homophily
+    ######################################################
+    # def cal_cl_loss(self, user_embeds, item_embeds, ancs):
+    #     """
+    #     Calculate the MIL NCE loss based on homophily ratios and InfoNCE.
+        
+    #     Args:
+    #         user_embeds (torch.Tensor): User embeddings.
+    #         item_embeds (torch.Tensor): Item embeddings.
+    #         ancs (torch.Tensor): Ancestors or reference nodes for calculating contrastive loss.
+            
+    #     Returns:
+    #         cl_loss (torch.Tensor): Contrastive learning loss 
+    #     """
+    #     item_embeds = F.normalize(item_embeds, p=2, dim=1)
+        
+    #     device = configs['device']
+    #     trn_mat = self.trn_mat.coalesce()
+    #     train_row_indices = trn_mat.indices()[0].to(device)
+    #     train_col_indices = trn_mat.indices()[1].to(device)
+        
+        
+    #     trust_mat = self.trust_mat.coalesce()
+    #     trust_row_indices = trust_mat.indices()[0].to(device) 
+    #     trust_col_indices = trust_mat.indices()[1].to(device)
+        
+    #     cl_loss = 0
+        
+    #     for u in ancs:
+    #         z_u = user_embeds[u] 
+    #         items_u = train_col_indices[train_row_indices == u]
+    #         neighbors_u = trust_col_indices[trust_row_indices == u]
+            
+    #         item_embeddings_u = item_embeds[items_u]
+    #         item_embeddings_vs = t.empty((0, item_embeds.size(1)), device=device)
+            
+    #         homophily_u = []
+    #         indices = [0]
+            
+    #         for v in neighbors_u:
+    #             items_v = train_col_indices[train_row_indices == v]
+    #             indices.append(indices[-1] + len(items_v))
+    #             item_embeddings_v = item_embeds[items_v]
+    #             item_embeddings_vs = t.cat((item_embeddings_vs, item_embeddings_v), dim=0)
+            
+    #         similarity_matrix = t.matmul(item_embeddings_u, item_embeddings_vs.T)
+    #         for i, v in enumerate(neighbors_u):
+    #             if indices[i] == indices[i+1]:
+                    
+    #                 continue
+    #             result_v = similarity_matrix[:, indices[i]:indices[i+1]]
+    
+    #             num = result_v.max(dim=1).values.sum() + result_v.max(dim=0).values.sum()
+    #             den = result_v.size(0) + result_v.size(1)
+    #             homophily = num / den
+    #             homophily_u.append(homophily)
+                    
+            
+            
+    #         neighbors_u = t.cat((neighbors_u, u.unsqueeze(0)), dim=0)
+    #         homophily_u.append(1)
+            
+    #         homophily_u = t.tensor(homophily_u, device=device)
+
+            
+    #         # Select the same number of non-neighbors as neighbors_u
+    #         all_nodes = t.arange(user_embeds.size(0), device=device)
+    #         non_neighbors_u = all_nodes[~t.isin(all_nodes, neighbors_u)]
+    #         non_neighbors_u = non_neighbors_u[t.randperm(non_neighbors_u.size(0))[:neighbors_u.numel()]]
+
+    #         similarities_neighbors = t.exp(t.cosine_similarity(z_u.unsqueeze(0), user_embeds[neighbors_u], dim=1) / self.temperature)
+    #         numerator = t.sum(homophily_u * similarities_neighbors)
+
+    #         # Calculate similarity for each non-neighbor in non_neighbors_u
+    #         similarities_non_neighbors = t.exp(t.cosine_similarity(z_u.unsqueeze(0), user_embeds[non_neighbors_u], dim=1) / self.temperature)
+
+    #         # Calculate denominator as sum of similarities with neighbors and non-neighbors
+    #         denominator = t.sum(similarities_neighbors) + t.sum(similarities_non_neighbors)
+
+    #         # Calculate -log of the probability and add to contrastive loss
+    #         cl_loss_u = -t.log(numerator / (denominator + 1e-8))  # Small epsilon to prevent division by zero
+    #         cl_loss += cl_loss_u
+
+    #     return cl_loss
     ######################################################
 
 
@@ -337,8 +479,10 @@ class IDEA_MHCN_V2(BaseModel):
         global_ssl = -(pos-neg1).sigmoid().log().sum()
         return local_ssl + global_ssl
 
-    def cal_loss(self, batch_data):
+    def cal_loss(self, batch_data, a):
         self.is_training = True
+        if not a:
+            self.homophily_ratios = self._compute_homophily_ratios().to(configs['device'])
         user_embeds, item_embeds = self.forward()
         ancs, poss, negs = batch_data
         
