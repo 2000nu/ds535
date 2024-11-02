@@ -426,9 +426,9 @@ class IDEA_MHCN_V3(BaseModel):
         reg_loss = self.reg_weight * reg_params(self)
         
         ss_loss = 0
-        ss_loss += self._hierarchical_self_supervision(self._self_supervised_gating(user_embeds, 1), self.data_handler.H_s)
-        ss_loss += self._hierarchical_self_supervision(self._self_supervised_gating(user_embeds, 2), self.data_handler.H_j)
-        ss_loss += self._hierarchical_self_supervision(self._self_supervised_gating(user_embeds, 3), self.data_handler.H_p)
+        ss_loss += self._hierarchical_self_supervision(self._self_supervised_gating(user_embeds, 1), self.H_s)
+        ss_loss += self._hierarchical_self_supervision(self._self_supervised_gating(user_embeds, 2), self.H_j)
+        ss_loss += self._hierarchical_self_supervision(self._self_supervised_gating(user_embeds, 3), self.H_p)
         ss_loss *= self.ss_rate
         
         ######################################################
