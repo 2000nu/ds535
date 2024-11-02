@@ -541,7 +541,7 @@ class DataHandlerSocial:
 									num_nodes=multi_adj_time_norm.shape[0],
 									device=configs['device'])
 
-		elif configs['model']['name'] == 'mhcn':
+		elif configs['model']['name'] == 'mhcn' or configs['model']['name'] == 'idea_mhcn_v2':
 		# elif 'mhcn' in configs['model']['name']:
 			M_matrices = self._build_motif_induced_adjacency_matrix(trust_mat, trn_mat)
 			H_s = M_matrices[0]

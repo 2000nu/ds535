@@ -9,6 +9,7 @@ from models.model_utils import SpAdjEdgeDrop
 import numpy as np
 from tqdm import tqdm
 import os
+import torch.sparse as sparse
 ######################################################
 
 init = nn.init.xavier_uniform_
@@ -16,7 +17,7 @@ uniformInit = nn.init.uniform
 
 class IDEA_MHCN_V3(BaseModel):
     def __init__(self, data_handler):
-        super(IDEA_MHCN_V2, self).__init__(data_handler)
+        super(IDEA_MHCN_V3, self).__init__(data_handler)
         self.data_handler = data_handler
         self._load_configs()
         self._initialize_parameters()
@@ -164,20 +165,22 @@ class IDEA_MHCN_V3(BaseModel):
         Returns:
             torch sparse tensor: Masked user-user trust matrix
         """
-        # Example implementation
+        device = configs['device']
+        
         S = trust_mat.coalesce()
         S_values = S.values()
         min_val, max_val = S_values.min(), S_values.max()
         normalized_values = (S_values - min_val) / (max_val - min_val + 1e-10)
 
         sorted_indices = t.argsort(normalized_values, descending=True)
-        num_samples = int(len(S_values) * self.sampling_ratio)
+
+        num_samples = int(len(S_values) * configs['model']['sampling_ratio'])
         selected_indices = sorted_indices[:num_samples]
 
-        mask_values = normalized_values[selected_indices] if use_normalized_values else t.ones(num_samples) # normalization is not needed if we weight edges as 1
-        masked_indices = S.indices()[:, selected_indices]
+        mask_values = t.ones(num_samples).to(device) # normalization is not needed if we weight edges as 1
+        masked_indices = S.indices()[:, selected_indices].to(device)
     
-        return t.sparse_coo_tensor(masked_indices, mask_values, S.size())
+        return t.sparse_coo_tensor(masked_indices, mask_values, S.size()).coalesce()
     ######################################################
     
     
@@ -294,6 +297,8 @@ class IDEA_MHCN_V3(BaseModel):
         trust_row_indices = trust_mat_new.indices()[0]
         trust_col_indices = trust_mat_new.indices()[1]
         
+        uu_sim_dense = self.uu_sim.to_dense()
+        
         for u in ancs:
             z_u = user_embeds[u]
             
@@ -302,20 +307,19 @@ class IDEA_MHCN_V3(BaseModel):
 
             # Inclue u itself as a component of its neighbor
             neighbors_u = t.cat((neighbors_u, u.unsqueeze(0)), dim=0)
-            homophily_u = t.cat((homophily_u, t.tensor([1], device=device)), dim=0)
             
             # Negative samples (non-neighbors)
-            all_nodes = t.arange(user_embeds.size(0), device=device)
+            all_nodes = t.arange(user_embeds.size(0), device=configs['device'])
             non_neighbors_u = all_nodes[~t.isin(all_nodes, neighbors_u)]
             non_neighbors_u = non_neighbors_u[t.randperm(non_neighbors_u.size(0))[:neighbors_u.numel()]]
 
             # Compute positive similarities and numerator
             pos_temperature = self.temperature
-            similarities_neighbors = t.sum(t.exp(t.cosine_similarity(z_u.unsqueeze(0), user_embeds[neighbors_u], dim=1) / pos_temperature)))
+            similarities_neighbors = t.sum(t.exp(t.cosine_similarity(z_u.unsqueeze(0), user_embeds[neighbors_u], dim=1) / pos_temperature))
             numerator = similarities_neighbors
 
             # Calculate average similarity for negative samples in uu_sim matrix
-            neg_similarities = self.uu_sim[u, non_neighbors_u].to_dense()
+            neg_similarities = uu_sim_dense[u, non_neighbors_u]
             average_neg_sim = t.mean(neg_similarities)
             neg_temperature = self.temperature * average_neg_sim
             
@@ -412,8 +416,6 @@ class IDEA_MHCN_V3(BaseModel):
 
     def cal_loss(self, batch_data):
         self.is_training = True
-        if not a:
-            self.homophily_ratios = self._compute_homophily_ratios().to(configs['device'])
         user_embeds, item_embeds = self.forward()
         ancs, poss, negs = batch_data
         

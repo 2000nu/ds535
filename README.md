@@ -8,7 +8,7 @@ python main.py --model baseline_mhcn --dataset yelp --device cuda --cuda 0 (devi
 
 and we will use this command:
 ```bash
-python main.py --model idea_mhcn --dataset yelp --device cuda --cuda 0 (devices you will use)
+python main.py --model idea_mhcn_v3 --dataset yelp --device cuda --cuda 0
 ```
 
 We first deal with these files:

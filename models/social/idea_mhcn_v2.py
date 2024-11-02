@@ -479,9 +479,9 @@ class IDEA_MHCN_V2(BaseModel):
         global_ssl = -(pos-neg1).sigmoid().log().sum()
         return local_ssl + global_ssl
 
-    def cal_loss(self, batch_data, a):
+    def cal_loss(self, batch_data):
         self.is_training = True
-        if not a:
+        if self.epoch_idx == 0:
             self.homophily_ratios = self._compute_homophily_ratios().to(configs['device'])
         user_embeds, item_embeds = self.forward()
         ancs, poss, negs = batch_data
