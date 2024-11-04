@@ -37,7 +37,7 @@ class Tuner(object):
             configs['model'][para_name] = seleted_val
         configs['tune']['now_para_str'] = now_para_str
         self.logger.log('hyperparameter: {}'.format(now_para))
-        model = build_model(data_handler).cuda()
+        model = build_model(data_handler).to(configs['device'])
         return model
 
     def grid_search(self, data_handler, trainer):
