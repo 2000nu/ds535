@@ -22,7 +22,7 @@ class IDEA_MHCN_V3(BaseModel):
         self._load_configs()
         self._initialize_parameters()
         
-        self.uu_sim = self._compute_adamic_adar(self.trn_mat, type="user")
+        self.uu_sim = self._compute_adamic_adar(self.trn_mat)
         self.trust_mat_new = self._masking_trust_matrix(self.trust_mat, self.uu_sim)
         self._load_data(self.trust_mat_new, self.trn_mat) # re-define the motifs and joint adjacency matrices (originally it is defined in data_handler_social.py)
         
@@ -96,61 +96,37 @@ class IDEA_MHCN_V3(BaseModel):
         return mixed_embeds, score
 
     ######################################################
-    def _compute_adamic_adar(self, trn_mat, type):
+    def _compute_adamic_adar(self, trn_mat):
         """
         TODO: Computes the Adamic-Adar similarity matrix for either items or users based on the relation matrix.
 
         Args:
-            relation_mat (torch sparse tensor): The relation matrix (user-item or item-user matrix)
-            type (str): Type of similarity to compute ('item' or 'user')
+            trn_mat (torch sparse tensor): The relation matrix (user-item or item-user matrix)
 
         Returns:
             torch sparse tensor: The computed Adamic-Adar similarity matrix for users or items.
         """
-        # Example implementation
-        if type == 'item':
-            # Compute user degree and inverse log for item similarity
-            user_degree = sparse.sum(trn_mat, dim=1).to_dense()
-            user_degree = 1 / t.log(user_degree + 1e-10)
-            user_degree[t.isinf(user_degree)] = 0  # Set any inf values to 0
-            indices = t.arange(0, user_degree.size(0)).unsqueeze(0).repeat(2, 1).to(trn_mat.device)
-            user_degree_diag = t.sparse_coo_tensor(indices, user_degree, (user_degree.size(0), user_degree.size(0)))
+        # Compute item degree and inverse log for user similarity
+        item_degree = sparse.sum(trn_mat, dim=0).to_dense()
+        item_degree = 1 / t.log(item_degree + 1e-10)
+        item_degree[t.isinf(item_degree)] = 0  # Set any inf values to 0
+        indices = t.arange(0, item_degree.size(0)).unsqueeze(0).repeat(2, 1).to(trn_mat.device)
+        item_degree_diag = t.sparse_coo_tensor(indices, item_degree, (item_degree.size(0), item_degree.size(0)))
 
-            # Calculate item similarity matrix
-            intermediate = sparse.mm(trn_mat.transpose(0, 1), user_degree_diag)
-            item_similarity = sparse.mm(intermediate, trn_mat)
+        # Calculate user similarity matrix
+        intermediate = sparse.mm(trn_mat, item_degree_diag)
+        user_similarity = sparse.mm(intermediate, trn_mat.transpose(0, 1))
 
-            # Remove diagonal values (self-similarities)
-            indices = item_similarity._indices()
-            values = item_similarity._values()
-            mask = indices[0] != indices[1]
-            new_indices = indices[:, mask]
-            new_values = values[mask]
-            item_similarity = t.sparse_coo_tensor(new_indices, new_values, item_similarity.shape).coalesce()
+        # Remove diagonal values (self-similarities)
+        indices = user_similarity._indices()
+        values = user_similarity._values()
+        mask = indices[0] != indices[1]
+        new_indices = indices[:, mask]
+        new_values = values[mask]
+        
+        user_similarity = t.sparse_coo_tensor(new_indices, new_values, user_similarity.shape).coalesce()
 
-            return item_similarity
-
-        elif type == 'user':
-            # Compute item degree and inverse log for user similarity
-            item_degree = sparse.sum(trn_mat, dim=0).to_dense()
-            item_degree = 1 / t.log(item_degree + 1e-10)
-            item_degree[t.isinf(item_degree)] = 0  # Set any inf values to 0
-            indices = t.arange(0, item_degree.size(0)).unsqueeze(0).repeat(2, 1).to(trn_mat.device)
-            item_degree_diag = t.sparse_coo_tensor(indices, item_degree, (item_degree.size(0), item_degree.size(0)))
-
-            # Calculate user similarity matrix
-            intermediate = sparse.mm(trn_mat, item_degree_diag)
-            user_similarity = sparse.mm(intermediate, trn_mat.transpose(0, 1))
-
-            # Remove diagonal values (self-similarities)
-            indices = user_similarity._indices()
-            values = user_similarity._values()
-            mask = indices[0] != indices[1]
-            new_indices = indices[:, mask]
-            new_values = values[mask]
-            user_similarity = t.sparse_coo_tensor(new_indices, new_values, user_similarity.shape).coalesce()
-
-            return user_similarity
+        return user_similarity
     ######################################################
     
     ######################################################
@@ -167,20 +143,35 @@ class IDEA_MHCN_V3(BaseModel):
         """
         device = configs['device']
         
+        # Coalesce matrices to ensure indices and values align
         S = trust_mat.coalesce()
-        S_values = S.values()
-        min_val, max_val = S_values.min(), S_values.max()
-        normalized_values = (S_values - min_val) / (max_val - min_val + 1e-10)
+        S_indices = S.indices()
+        uu_sim_coo = uu_sim.coalesce()
+        
+        # Step 1: Convert sparse matrices to dense
+        S_dense = trust_mat.to_dense().to(device)
+        uu_sim_dense = uu_sim.to_dense().to(device)
+        
+        # Step 2: Perform element-wise multiplication
+        multiplied_dense = S_dense * uu_sim_dense
 
-        sorted_indices = t.argsort(normalized_values, descending=True)
-
-        num_samples = int(len(S_values) * configs['model']['sampling_ratio'])
+        # Step 3: Convert to sparse format
+        multiplied_sparse = multiplied_dense.to_sparse().coalesce()
+        
+        # Step 4: Sort the non-zero values in the sparse matrix
+        multiplied_values = multiplied_sparse.values()
+        sorted_indices = t.argsort(multiplied_values, descending=True)
+        
+        # Calculate the number of samples based on sampling_ratio
+        num_samples = int(len(multiplied_values) * configs['model']['sampling_ratio'])
         selected_indices = sorted_indices[:num_samples]
 
-        mask_values = t.ones(num_samples).to(device) # normalization is not needed if we weight edges as 1
-        masked_indices = S.indices()[:, selected_indices].to(device)
-    
-        return t.sparse_coo_tensor(masked_indices, mask_values, S.size()).coalesce()
+        # Step 5: Select indices and values for the sampled entries
+        mask_values = multiplied_values[selected_indices]
+        mask_indices = multiplied_sparse.indices()[:, selected_indices].to(device)
+
+        # Return the final sparse tensor with selected top values
+        return t.sparse_coo_tensor(mask_indices, mask_values, multiplied_dense.size()).coalesce()
     ######################################################
     
     
@@ -334,6 +325,8 @@ class IDEA_MHCN_V3(BaseModel):
     #         cl_loss += cl_loss_u
 
     #     return cl_loss
+
+    
     def cal_cl_loss(self, user_embeds, ancs):
         """
         TODO: Computes the contrastive loss for user embeddings based on positive (connected) 
@@ -379,7 +372,7 @@ class IDEA_MHCN_V3(BaseModel):
             average_neg_sim = t.mean(neg_similarities) # average similarity between target user and negative samples
 
             # 천우님 이 부분 config에 hyperparameter로 추가해주세용 k: [0.1, 0.5, 1, 5, 10]
-            k = None # hyperparameter: k > 1: 더 빠르게 0.5 -> 1로 증가(평균값의 미세 변화에도 temperature 변동 up!) k<1: 천천히 증가(작은 평균값 차이에는 거의 변동 X)
+            k = configs['model']['k'] # hyperparameter: k > 1: 더 빠르게 0.5 -> 1로 증가(평균값의 미세 변화에도 temperature 변동 up!) k<1: 천천히 증가(작은 평균값 차이에는 거의 변동 X)
             temparature_scaling =  1 / (1 + t.exp(-k * average_neg_sim))
 
             temperature = self.temperature * temparature_scaling
