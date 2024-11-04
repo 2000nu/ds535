@@ -20,11 +20,11 @@ test:
   batch_size: 512 # How many users per batch during validation
 
 data:
-  type: social # choose in {general_cf, multi_behavior, sequential, social}
+  type: social
   name: yelp
 
 model:
-  name: idea_mhcn_v3 # case-insensitive
+  name: idea_mhcn_v3 
   layer_num: 2
   reg_weight: 1.0e-3
   embedding_size: 64
@@ -33,9 +33,14 @@ model:
   zeta: 0.3
   temperature: 0.1
   sampling_ratio: 0.5
+  k: 1
 
 tune:
-  enable: false # Whether to enable grid search to search for optimal hyperparameters
-  hyperparameters: [layer_num, reg_weight] # The name of the hyperparameter
-  # layer_num: [1, 2, 3] # Use a list to store the search range
+  enable: true 
+  hyperparameters: [layer_num, reg_weight, cl_weight, temperature, sampling_ratio, k] 
+  layer_num: [1, 2, 3] 
   reg_weight: [1.0e-1, 1.0e-2, 1.0e-3]
+  cl_weight: [1.0, 1.0e-1, 1.0e-2, 1.0e-3]
+  temperature: [0.1, 0.2, 0.3, 0.4, 0.5]
+  sampling_ratio: [0.5, 0.6, 0.7, 0.8, 0.9, 1.0]
+  k: [0.1, 0.5, 1, 5, 10]
