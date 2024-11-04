@@ -388,7 +388,7 @@ class IDEA_MHCN_V3(BaseModel):
             denominator = t.sum(similarities_neighbors) + t.sum(similarities_non_neighbors)
 
             # Calculate -log of the probability and add to contrastive loss
-            cl_loss_u = -t.log(numerator / (denominator + 1e-8))  # Small epsilon to prevent division by zero
+            cl_loss_u = -temperature * t.log(numerator / (denominator + 1e-8))  # Small epsilon to prevent division by zero
             cl_loss += cl_loss_u
 
         return cl_loss
