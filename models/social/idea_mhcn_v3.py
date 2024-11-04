@@ -278,6 +278,62 @@ class IDEA_MHCN_V3(BaseModel):
     ######################################################
 
     ######################################################
+    # def cal_cl_loss(self, user_embeds, ancs):
+    #     """
+    #     TODO: Computes the contrastive loss for user embeddings based on positive (connected) 
+    #     and negative (unconnected) neighbors from the trust matrix.
+        
+    #     Args:
+    #         user_embeds (torch tensor): User embeddings.
+    #         ancs (torch tensor): Anchor users for which the contrastive loss is computed.
+
+    #     Returns:
+    #         torch scalar: Calculated contrastive loss.
+    #     """
+        
+    #     trust_mat_new = self.trust_mat_new
+    #     cl_loss = 0
+        
+    #     trust_row_indices = trust_mat_new.indices()[0]
+    #     trust_col_indices = trust_mat_new.indices()[1]
+        
+    #     uu_sim_dense = self.uu_sim.to_dense()
+        
+    #     for u in ancs:
+    #         z_u = user_embeds[u]
+            
+    #         # Positive neighbors (friends) based on trust_mat_new
+    #         neighbors_u = trust_col_indices[trust_row_indices == u]
+
+    #         # Inclue u itself as a component of its neighbor
+    #         neighbors_u = t.cat((neighbors_u, u.unsqueeze(0)), dim=0)
+            
+    #         # Negative samples (non-neighbors)
+    #         all_nodes = t.arange(user_embeds.size(0), device=configs['device'])
+    #         non_neighbors_u = all_nodes[~t.isin(all_nodes, neighbors_u)]
+    #         non_neighbors_u = non_neighbors_u[t.randperm(non_neighbors_u.size(0))[:neighbors_u.numel()]]
+
+    #         # Compute positive similarities and numerator
+    #         pos_temperature = self.temperature
+    #         similarities_neighbors = t.sum(t.exp(t.cosine_similarity(z_u.unsqueeze(0), user_embeds[neighbors_u], dim=1) / pos_temperature))
+    #         numerator = similarities_neighbors
+
+    #         # Calculate average similarity for negative samples in uu_sim matrix
+    #         neg_similarities = uu_sim_dense[u, non_neighbors_u]
+    #         average_neg_sim = t.mean(neg_similarities)
+    #         neg_temperature = self.temperature * average_neg_sim
+            
+    #         # Adjust non-neighbor similarities by neg_temperature
+    #         similarities_non_neighbors = t.exp(t.cosine_similarity(z_u.unsqueeze(0), user_embeds[non_neighbors_u], dim=1) / neg_temperature)
+
+    #         # Calculate denominator as sum of similarities with neighbors and non-neighbors
+    #         denominator = t.sum(similarities_neighbors) + t.sum(similarities_non_neighbors)
+
+    #         # Calculate -log of the probability and add to contrastive loss
+    #         cl_loss_u = -t.log(numerator / (denominator + 1e-8))  # Small epsilon to prevent division by zero
+    #         cl_loss += cl_loss_u
+
+    #     return cl_loss
     def cal_cl_loss(self, user_embeds, ancs):
         """
         TODO: Computes the contrastive loss for user embeddings based on positive (connected) 
@@ -298,6 +354,8 @@ class IDEA_MHCN_V3(BaseModel):
         trust_col_indices = trust_mat_new.indices()[1]
         
         uu_sim_dense = self.uu_sim.to_dense()
+
+        ###### 모든 u에 대한 평균 negative sample과의 similarity 정보가 있고, 이를 기준으로 정규화..? #### 좀 더 생각해보자.
         
         for u in ancs:
             z_u = user_embeds[u]
@@ -310,21 +368,28 @@ class IDEA_MHCN_V3(BaseModel):
             
             # Negative samples (non-neighbors)
             all_nodes = t.arange(user_embeds.size(0), device=configs['device'])
+
+            ##### Changed part ##### 
+            # For all samples except for positive samples as negative samples 
             non_neighbors_u = all_nodes[~t.isin(all_nodes, neighbors_u)]
-            non_neighbors_u = non_neighbors_u[t.randperm(non_neighbors_u.size(0))[:neighbors_u.numel()]]
+
+            ##### Changed part ##### 
+            # temperature for u: adjusted by average similarity of negative samples and u
+            neg_similarities = uu_sim_dense[u, non_neighbors_u]
+            average_neg_sim = t.mean(neg_similarities) # average similarity between target user and negative samples
+
+            # 천우님 이 부분 config에 hyperparameter로 추가해주세용 k: [0.1, 0.5, 1, 5, 10]
+            k = None # hyperparameter: k > 1: 더 빠르게 0.5 -> 1로 증가(평균값의 미세 변화에도 temperature 변동 up!) k<1: 천천히 증가(작은 평균값 차이에는 거의 변동 X)
+            temparature_scaling =  1 / (1 + t.exp(-k * average_neg_sim))
+
+            temperature = self.temperature * temparature_scaling
 
             # Compute positive similarities and numerator
-            pos_temperature = self.temperature
-            similarities_neighbors = t.sum(t.exp(t.cosine_similarity(z_u.unsqueeze(0), user_embeds[neighbors_u], dim=1) / pos_temperature))
+            similarities_neighbors = t.sum(t.exp(t.cosine_similarity(z_u.unsqueeze(0), user_embeds[neighbors_u], dim=1) / temperature))
             numerator = similarities_neighbors
 
-            # Calculate average similarity for negative samples in uu_sim matrix
-            neg_similarities = uu_sim_dense[u, non_neighbors_u]
-            average_neg_sim = t.mean(neg_similarities)
-            neg_temperature = self.temperature * average_neg_sim
-            
             # Adjust non-neighbor similarities by neg_temperature
-            similarities_non_neighbors = t.exp(t.cosine_similarity(z_u.unsqueeze(0), user_embeds[non_neighbors_u], dim=1) / neg_temperature)
+            similarities_non_neighbors = t.exp(t.cosine_similarity(z_u.unsqueeze(0), user_embeds[non_neighbors_u], dim=1) / temperature)
 
             # Calculate denominator as sum of similarities with neighbors and non-neighbors
             denominator = t.sum(similarities_neighbors) + t.sum(similarities_non_neighbors)
