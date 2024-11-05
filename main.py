@@ -5,6 +5,8 @@ from trainer.logger import Logger
 from data_utils.build_data_handler import build_data_handler
 from trainer.build_trainer import build_trainer
 from trainer.tuner import Tuner
+import os
+os.environ["PYTORCH_CUDA_ALLOC_CONF"] = "max_split_size_mb:32"
 
 def main():
     # First Step: Create data_handler

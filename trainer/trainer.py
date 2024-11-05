@@ -51,6 +51,13 @@ class Trainer(object):
         if optim_config['name'] == 'adam':
             self.optimizer = optim.Adam(model.parameters(
             ), lr=optim_config['lr'], weight_decay=optim_config['weight_decay'])
+        elif optim_config['name'] == 'sgd':
+            self.optimizer = optim.SGD(
+                model.parameters(),
+                lr=optim_config['lr'],
+                momentum=optim_config.get('momentum', 0.0),
+                weight_decay=optim_config['weight_decay']
+            )
 
     def train_epoch(self, model, epoch_idx):
         # prepare training data
