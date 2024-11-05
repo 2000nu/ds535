@@ -351,18 +351,20 @@ class IDEA_MHCN_V3(BaseModel):
         # Ensure ancs is on CPU
         ancs_cpu = ancs.to('cpu')
 
-        neighbors, temperature_scaling_factors = self.social_dict
+        social_dict = self.social_dict
         
         for u in ancs:
+            u = u.item()
             z_u = user_embeds[u]
             
-            temperature_scaling = self.social_dict['temperature_scaling_factors'][u]
+            temperature_scaling = social_dict[u]['temperature_scaling_factor']
             temperature = self.temperature * temperature_scaling
             
-            neighbors_u = neighbors[u].to('cpu')
+
+            neighbors_u = social_dict[u]['neighbors'].to('cpu')
             
             # non_neighbors_u = all_nodes[~t.isin(all_nodes_cpu, neighbors_u)] # for all nodes - neighbors
-            non_neighbors_u = all_nodes[~t.isin(ancs_cpu, neighbors_u)] # for ancs - neighbors
+            non_neighbors_u = ancs_cpu[~t.isin(ancs_cpu, neighbors_u)] # for ancs - neighbors
 
             # Compute positive similarities and numerator
             similarities_neighbors = t.sum(t.exp(t.cosine_similarity(z_u.unsqueeze(0), user_embeds[neighbors_u], dim=1) / temperature))
@@ -377,6 +379,9 @@ class IDEA_MHCN_V3(BaseModel):
             # Calculate -log of the probability and add to contrastive loss
             cl_loss_u = -temperature * t.log(numerator / (denominator + 1e-8))  # Small epsilon to prevent division by zero
             cl_loss += cl_loss_u
+
+        print(1)
+        exit()
 
         return cl_loss
 
