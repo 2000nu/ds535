@@ -359,13 +359,15 @@ class IDEA_MHCN_V3(BaseModel):
             
             temperature_scaling = social_dict[u]['temperature_scaling_factor']
             temperature = self.temperature * temperature_scaling
-            
 
             neighbors_u = social_dict[u]['neighbors'].to('cpu')
             
             # non_neighbors_u = all_nodes[~t.isin(all_nodes_cpu, neighbors_u)] # for all nodes - neighbors
             non_neighbors_u = ancs_cpu[~t.isin(ancs_cpu, neighbors_u)] # for ancs - neighbors
-
+            
+            if non_neighbors_u.numel() == 0:
+                continue
+            
             # Compute positive similarities and numerator
             similarities_neighbors = t.sum(t.exp(t.cosine_similarity(z_u.unsqueeze(0), user_embeds[neighbors_u], dim=1) / temperature))
             numerator = similarities_neighbors
