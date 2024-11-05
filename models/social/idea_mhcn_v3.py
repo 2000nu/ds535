@@ -24,6 +24,7 @@ class IDEA_MHCN_V3(BaseModel):
         
         self.uu_sim = self._compute_adamic_adar(self.trn_mat)
         self.trust_mat_new = self._masking_trust_matrix(self.trust_mat, self.uu_sim)
+        self.social_dict = self._get_social_dict(self.trust_mat, self.uu_sim) # dictonary of (user: neighbors, temperature_scaling_factor)
         self._load_data(self.trust_mat_new, self.trn_mat) # re-define the motifs and joint adjacency matrices (originally it is defined in data_handler_social.py)
         
         self.is_training = True
@@ -269,63 +270,58 @@ class IDEA_MHCN_V3(BaseModel):
     ######################################################
 
     ######################################################
-    # def cal_cl_loss(self, user_embeds, ancs):
-    #     """
-    #     TODO: Computes the contrastive loss for user embeddings based on positive (connected) 
-    #     and negative (unconnected) neighbors from the trust matrix.
-        
-    #     Args:
-    #         user_embeds (torch tensor): User embeddings.
-    #         ancs (torch tensor): Anchor users for which the contrastive loss is computed.
+    def _get_social_dict(self, trust_mat, uu_sim):
+        """
+        Computes a dictionary for each user containing their positive neighbors and 
+        a temperature scaling factor based on the average similarity with non-neighbors (negative samples).
 
-    #     Returns:
-    #         torch scalar: Calculated contrastive loss.
-    #     """
+        Args:
+            trust_mat (torch sparse tensor): The user-user trust matrix.
+            uu_sim (torch sparse tensor): The user-user similarity matrix.
+
+        Returns:
+            dict: A dictionary where keys are user indices and values are dictionaries containing:
+                - 'neighbors': The user's neighbors (including the user itself).
+                - 'temperature_scaling_factor': The calculated temperature scaling factor.
+        """
         
-    #     trust_mat_new = self.trust_mat_new
-    #     cl_loss = 0
+        # Extract row and column indices of non-zero elements in the trust matrix
+        trust_row_indices = trust_mat.indices()[0]
+        trust_col_indices = trust_mat.indices()[1]
         
-    #     trust_row_indices = trust_mat_new.indices()[0]
-    #     trust_col_indices = trust_mat_new.indices()[1]
+        # Convert similarity matrix to dense for easier indexing
+        uu_sim_dense = uu_sim.to_dense()
         
-    #     uu_sim_dense = self.uu_sim.to_dense()
+        # Initialize an empty dictionary to store neighbors and scaling factors for each user
+        social_dict = {}
+        users = t.arange(uu_sim.size(0), device=configs['device'])
+        k = configs['model']['k']  # Hyperparameter for scaling adjustment sensitivity
         
-    #     for u in ancs:
-    #         z_u = user_embeds[u]
+        # Iterate over each user to compute their neighbors and scaling factor
+        for u in users:
+            # Find positive neighbors of user `u` in the trust matrix and add `u` itself
+            neighbors_u = trust_col_indices[trust_row_indices == u]
+            neighbors_u = t.cat((neighbors_u, u.unsqueeze(0)), dim=0)
             
-    #         # Positive neighbors (friends) based on trust_mat_new
-    #         neighbors_u = trust_col_indices[trust_row_indices == u]
-
-    #         # Inclue u itself as a component of its neighbor
-    #         neighbors_u = t.cat((neighbors_u, u.unsqueeze(0)), dim=0)
+            # Identify non-neighbors (negative samples) by excluding neighbors from all users
+            non_neighbors_u = users[~t.isin(users, neighbors_u)]
             
-    #         # Negative samples (non-neighbors)
-    #         all_nodes = t.arange(user_embeds.size(0), device=configs['device'])
-    #         non_neighbors_u = all_nodes[~t.isin(all_nodes, neighbors_u)]
-    #         non_neighbors_u = non_neighbors_u[t.randperm(non_neighbors_u.size(0))[:neighbors_u.numel()]]
-
-    #         # Compute positive similarities and numerator
-    #         pos_temperature = self.temperature
-    #         similarities_neighbors = t.sum(t.exp(t.cosine_similarity(z_u.unsqueeze(0), user_embeds[neighbors_u], dim=1) / pos_temperature))
-    #         numerator = similarities_neighbors
-
-    #         # Calculate average similarity for negative samples in uu_sim matrix
-    #         neg_similarities = uu_sim_dense[u, non_neighbors_u]
-    #         average_neg_sim = t.mean(neg_similarities)
-    #         neg_temperature = self.temperature * average_neg_sim
+            # Compute the average similarity with negative samples
+            neg_similarities = uu_sim_dense[u, non_neighbors_u]
+            average_neg_sim = t.mean(neg_similarities)
             
-    #         # Adjust non-neighbor similarities by neg_temperature
-    #         similarities_non_neighbors = t.exp(t.cosine_similarity(z_u.unsqueeze(0), user_embeds[non_neighbors_u], dim=1) / neg_temperature)
-
-    #         # Calculate denominator as sum of similarities with neighbors and non-neighbors
-    #         denominator = t.sum(similarities_neighbors) + t.sum(similarities_non_neighbors)
-
-    #         # Calculate -log of the probability and add to contrastive loss
-    #         cl_loss_u = -t.log(numerator / (denominator + 1e-8))  # Small epsilon to prevent division by zero
-    #         cl_loss += cl_loss_u
-
-    #     return cl_loss
-
+            # Calculate the temperature scaling factor with a sigmoid function
+            temperature_scaling_factor = 1 / (1 + t.exp(-k * average_neg_sim))
+            
+            # Store the neighbors and scaling factor in a dictionary for this user
+            social_dict[u.item()] = {
+                'neighbors': neighbors_u, 
+                'temperature_scaling_factor': temperature_scaling_factor
+            }
+        
+        return social_dict
+    ######################################################
+    
     
     def cal_cl_loss(self, user_embeds, ancs):
         """
@@ -340,42 +336,33 @@ class IDEA_MHCN_V3(BaseModel):
             torch scalar: Calculated contrastive loss.
         """
         
-        trust_mat_new = self.trust_mat_new
+        # trust_mat_new = self.trust_mat_new
         cl_loss = 0
         
-        trust_row_indices = trust_mat_new.indices()[0]
-        trust_col_indices = trust_mat_new.indices()[1]
+        # Move indices to CPU
+        # trust_row_indices = trust_mat_new.indices()[0].to('cpu')
+        # trust_col_indices = trust_mat_new.indices()[1].to('cpu')
         
-        uu_sim_dense = self.uu_sim.to_dense()
+        # Move uu_sim and user_embeds to CPU
+        # uu_sim_dense = self.uu_sim.to_dense().to('cpu')
+        user_embeds_cpu = user_embeds.to('cpu')  # Move user embeddings to CPU for this computation
+        all_nodes = t.arange(user_embeds_cpu.size(0), device='cpu')
+        
+        # Ensure ancs is on CPU
+        ancs_cpu = ancs.to('cpu')
 
-        ###### 모든 u에 대한 평균 negative sample과의 similarity 정보가 있고, 이를 기준으로 정규화..? #### 좀 더 생각해보자.
+        neighbors, temperature_scaling_factors = self.social_dict
         
         for u in ancs:
             z_u = user_embeds[u]
             
-            # Positive neighbors (friends) based on trust_mat_new
-            neighbors_u = trust_col_indices[trust_row_indices == u]
-
-            # Inclue u itself as a component of its neighbor
-            neighbors_u = t.cat((neighbors_u, u.unsqueeze(0)), dim=0)
+            temperature_scaling = self.social_dict['temperature_scaling_factors'][u]
+            temperature = self.temperature * temperature_scaling
             
-            # Negative samples (non-neighbors)
-            all_nodes = t.arange(user_embeds.size(0), device=configs['device'])
-
-            ##### Changed part ##### 
-            # For all samples except for positive samples as negative samples 
-            non_neighbors_u = all_nodes[~t.isin(all_nodes, neighbors_u)]
-
-            ##### Changed part ##### 
-            # temperature for u: adjusted by average similarity of negative samples and u
-            neg_similarities = uu_sim_dense[u, non_neighbors_u]
-            average_neg_sim = t.mean(neg_similarities) # average similarity between target user and negative samples
-
-            # 천우님 이 부분 config에 hyperparameter로 추가해주세용 k: [0.1, 0.5, 1, 5, 10]
-            k = configs['model']['k'] # hyperparameter: k > 1: 더 빠르게 0.5 -> 1로 증가(평균값의 미세 변화에도 temperature 변동 up!) k<1: 천천히 증가(작은 평균값 차이에는 거의 변동 X)
-            temparature_scaling =  1 / (1 + t.exp(-k * average_neg_sim))
-
-            temperature = self.temperature * temparature_scaling
+            neighbors_u = neighbors[u].to('cpu')
+            
+            # non_neighbors_u = all_nodes[~t.isin(all_nodes_cpu, neighbors_u)] # for all nodes - neighbors
+            non_neighbors_u = all_nodes[~t.isin(ancs_cpu, neighbors_u)] # for ancs - neighbors
 
             # Compute positive similarities and numerator
             similarities_neighbors = t.sum(t.exp(t.cosine_similarity(z_u.unsqueeze(0), user_embeds[neighbors_u], dim=1) / temperature))
