@@ -1,5 +1,5 @@
 __pycache__/
-log/
+# log/
 refer.py
 checkpoint/
 .DS_Store

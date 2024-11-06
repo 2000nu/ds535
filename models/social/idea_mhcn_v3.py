@@ -382,8 +382,8 @@ class IDEA_MHCN_V3(BaseModel):
             cl_loss_u = -temperature * t.log(numerator / (denominator + 1e-8))  # Small epsilon to prevent division by zero
             cl_loss += cl_loss_u
 
-        print(1)
-        exit()
+        # print(1)
+        # exit()
 
         return cl_loss
 

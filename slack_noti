@@ -1,0 +1,31 @@
+#!/bin/bash
+
+# Slack Webhook URL
+SLACK_WEBHOOK_URL="https://hooks.slack.com/services/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"
+
+# 세션 이름 배열
+SESSIONS=("yelp-tune" "lastFM-tune")
+
+# 세션이 종료되었는지 확인하는 함수
+check_sessions() {
+    for session in "${SESSIONS[@]}"; do
+        if ! screen -list | grep -q "$session"; then
+            send_slack_notification "$session"
+        fi
+    done
+}
+
+# Slack 알림 전송 함수
+send_slack_notification() {
+    local session_name=$1
+    curl -X POST -H 'Content-type: application/json' \
+    --data "{\"text\":\"Screen session '$session_name' has terminated.\"}" \
+    $SLACK_WEBHOOK_URL
+}
+
+# 주기적으로 세션 상태를 확인
+while true; do
+    check_sessions
+    sleep 60  # 1분마다 확인
+done
+
