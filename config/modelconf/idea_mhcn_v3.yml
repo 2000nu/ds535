@@ -27,7 +27,7 @@ model:
   name: idea_mhcn_v3 
   layer_num: 2
   reg_weight: 1.0e-3
-  embedding_size: 32
+  embedding_size: 64
   ss_rate: 1.0e-2
   cl_weight: 1.0e-2
   zeta: 0.3
