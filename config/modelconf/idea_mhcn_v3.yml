@@ -37,10 +37,7 @@ model:
 
 tune:
   enable: true 
-  hyperparameters: [layer_num, reg_weight, cl_weight, temperature, sampling_ratio, k] 
-  layer_num: [1, 2, 3] 
-  reg_weight: [1.0e-1, 1.0e-2, 1.0e-3]
+  hyperparameters: [cl_weight, temperature, sampling_ratio] 
   cl_weight: [1.0, 1.0e-1, 1.0e-2, 1.0e-3]
   temperature: [0.1, 0.2, 0.3, 0.4, 0.5]
   sampling_ratio: [0.5, 0.6, 0.7, 0.8, 0.9, 1.0]
-  k: [0.1, 0.5, 1, 5, 10]
