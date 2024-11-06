@@ -1,12 +1,11 @@
 __pycache__/
-# log/
 refer.py
 checkpoint/
 .DS_Store
 .vscode
 .idea/
 *.pyc
-*.log
+# *.log
 *.zip
 *.bin
 runs/
