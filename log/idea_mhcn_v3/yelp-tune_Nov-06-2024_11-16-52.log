@@ -34,3 +34,5 @@
 2024-11-06 13:07:32,228 - Epoch  15 Test set [recall@10: 0.0292 recall@20: 0.0471 recall@40: 0.0759 ] Test set [ndcg@10: 0.0148 ndcg@20: 0.0193 ndcg@40: 0.0252 ] 
 2024-11-06 13:14:06,056 - [Epoch  16 /  30] bpr_loss: 49.1678 reg_loss: 12.2698 ss_loss: 1728.6777 cl_loss: 11.2075 
 2024-11-06 13:14:21,316 - Epoch  16 Test set [recall@10: 0.0289 recall@20: 0.0468 recall@40: 0.0757 ] Test set [ndcg@10: 0.0148 ndcg@20: 0.0192 ndcg@40: 0.0251 ] 
+2024-11-06 13:20:55,341 - [Epoch  17 /  30] bpr_loss: 46.7457 reg_loss: 13.1423 ss_loss: 1725.8744 cl_loss: 10.8522 
+2024-11-06 13:21:10,401 - Epoch  17 Test set [recall@10: 0.0293 recall@20: 0.0475 recall@40: 0.0754 ] Test set [ndcg@10: 0.0148 ndcg@20: 0.0193 ndcg@40: 0.0250 ] 
