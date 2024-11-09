@@ -30,7 +30,6 @@ model:
   embedding_size: 64
   ss_rate: 1.0e-2
   cl_weight: 1.0e-2
-  zeta: 0.3
   temperature: 0.1
   sampling_ratio: 0.5
   k: 1
