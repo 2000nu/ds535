@@ -1,0 +1,63 @@
+2024-11-16 08:02:53,393 - {'optimizer': {'name': 'adam', 'lr': 0.001, 'weight_decay': 0}, 'train': {'epoch': 30, 'batch_size': 2000, 'save_model': False, 'loss': 'pairwise', 'test_step': 1, 'reproducible': True, 'seed': 2023, 'tensorboard': True, 'log_loss': True, 'early_stop': False}, 'test': {'metrics': ['recall', 'ndcg'], 'k': [10, 20, 40], 'batch_size': 512}, 'data': {'type': 'social', 'name': 'epinions', 'user_num': 18081, 'item_num': 251722}, 'model': {'name': 'idea_mhcn_v4', 'layer_num': 2, 'reg_weight': 0.001, 'embedding_size': 64, 'ss_rate': 0.01}, 'tune': {'enable': False, 'hyperparameters': ['cl_weight', 'temperature', 'sampling_ratio'], 'cl_weight': [1.0, 0.1, 0.01, 0.001], 'temperature': [0.1, 0.2, 0.3, 0.4, 0.5], 'sampling_ratio': [0.5, 0.6, 0.7, 0.8, 0.9, 1.0]}, 'device': 'cuda', 'log': True}
+2024-11-16 08:04:00,030 - [Epoch   0 /  30] bpr_loss: 161.4353 reg_loss: 1.9002 ss_loss: 310.3210 
+2024-11-16 08:04:16,611 - Epoch   0 Test set [recall@10: 0.0195 recall@20: 0.0303 recall@40: 0.0446 ] Test set [ndcg@10: 0.0100 ndcg@20: 0.0127 ndcg@40: 0.0157 ] 
+2024-11-16 08:05:22,505 - [Epoch   1 /  30] bpr_loss: 106.4483 reg_loss: 3.8069 ss_loss: 212.7064 
+2024-11-16 08:05:36,964 - Epoch   1 Test set [recall@10: 0.0215 recall@20: 0.0314 recall@40: 0.0481 ] Test set [ndcg@10: 0.0109 ndcg@20: 0.0134 ndcg@40: 0.0168 ] 
+2024-11-16 08:06:42,663 - [Epoch   2 /  30] bpr_loss: 89.3913 reg_loss: 5.6829 ss_loss: 199.3232 
+2024-11-16 08:06:57,081 - Epoch   2 Test set [recall@10: 0.0212 recall@20: 0.0322 recall@40: 0.0488 ] Test set [ndcg@10: 0.0106 ndcg@20: 0.0134 ndcg@40: 0.0168 ] 
+2024-11-16 08:08:03,036 - [Epoch   3 /  30] bpr_loss: 77.9782 reg_loss: 7.5858 ss_loss: 189.5698 
+2024-11-16 08:08:16,974 - Epoch   3 Test set [recall@10: 0.0212 recall@20: 0.0331 recall@40: 0.0517 ] Test set [ndcg@10: 0.0104 ndcg@20: 0.0134 ndcg@40: 0.0172 ] 
+2024-11-16 08:09:22,791 - [Epoch   4 /  30] bpr_loss: 69.7597 reg_loss: 9.4775 ss_loss: 182.1521 
+2024-11-16 08:09:37,205 - Epoch   4 Test set [recall@10: 0.0202 recall@20: 0.0329 recall@40: 0.0516 ] Test set [ndcg@10: 0.0101 ndcg@20: 0.0133 ndcg@40: 0.0171 ] 
+2024-11-16 08:10:43,315 - [Epoch   5 /  30] bpr_loss: 63.4863 reg_loss: 11.3657 ss_loss: 175.0691 
+2024-11-16 08:10:59,906 - Epoch   5 Test set [recall@10: 0.0199 recall@20: 0.0331 recall@40: 0.0518 ] Test set [ndcg@10: 0.0099 ndcg@20: 0.0132 ndcg@40: 0.0170 ] 
+2024-11-16 08:12:05,626 - [Epoch   6 /  30] bpr_loss: 57.8193 reg_loss: 13.2506 ss_loss: 169.6240 
+2024-11-16 08:12:20,149 - Epoch   6 Test set [recall@10: 0.0204 recall@20: 0.0335 recall@40: 0.0513 ] Test set [ndcg@10: 0.0101 ndcg@20: 0.0134 ndcg@40: 0.0170 ] 
+2024-11-16 08:13:26,000 - [Epoch   7 /  30] bpr_loss: 53.2026 reg_loss: 15.0882 ss_loss: 161.5815 
+2024-11-16 08:13:39,743 - Epoch   7 Test set [recall@10: 0.0204 recall@20: 0.0333 recall@40: 0.0524 ] Test set [ndcg@10: 0.0101 ndcg@20: 0.0133 ndcg@40: 0.0172 ] 
+2024-11-16 08:14:45,727 - [Epoch   8 /  30] bpr_loss: 48.4279 reg_loss: 16.8842 ss_loss: 156.1482 
+2024-11-16 08:15:01,296 - Epoch   8 Test set [recall@10: 0.0204 recall@20: 0.0331 recall@40: 0.0513 ] Test set [ndcg@10: 0.0100 ndcg@20: 0.0132 ndcg@40: 0.0169 ] 
+2024-11-16 08:16:07,013 - [Epoch   9 /  30] bpr_loss: 44.5354 reg_loss: 18.5969 ss_loss: 149.8456 
+2024-11-16 08:16:21,234 - Epoch   9 Test set [recall@10: 0.0209 recall@20: 0.0325 recall@40: 0.0498 ] Test set [ndcg@10: 0.0102 ndcg@20: 0.0131 ndcg@40: 0.0167 ] 
+2024-11-16 08:17:27,572 - [Epoch  10 /  30] bpr_loss: 40.8169 reg_loss: 20.2379 ss_loss: 145.2605 
+2024-11-16 08:17:41,503 - Epoch  10 Test set [recall@10: 0.0199 recall@20: 0.0330 recall@40: 0.0502 ] Test set [ndcg@10: 0.0098 ndcg@20: 0.0130 ndcg@40: 0.0165 ] 
+2024-11-16 08:18:47,479 - [Epoch  11 /  30] bpr_loss: 38.4487 reg_loss: 21.8516 ss_loss: 141.1855 
+2024-11-16 08:19:02,271 - Epoch  11 Test set [recall@10: 0.0204 recall@20: 0.0322 recall@40: 0.0501 ] Test set [ndcg@10: 0.0101 ndcg@20: 0.0130 ndcg@40: 0.0167 ] 
+2024-11-16 08:20:07,828 - [Epoch  12 /  30] bpr_loss: 35.6297 reg_loss: 23.4070 ss_loss: 134.9069 
+2024-11-16 08:20:22,742 - Epoch  12 Test set [recall@10: 0.0195 recall@20: 0.0316 recall@40: 0.0495 ] Test set [ndcg@10: 0.0098 ndcg@20: 0.0128 ndcg@40: 0.0165 ] 
+2024-11-16 08:21:28,858 - [Epoch  13 /  30] bpr_loss: 33.3774 reg_loss: 24.9050 ss_loss: 130.2242 
+2024-11-16 08:21:43,886 - Epoch  13 Test set [recall@10: 0.0192 recall@20: 0.0312 recall@40: 0.0489 ] Test set [ndcg@10: 0.0098 ndcg@20: 0.0128 ndcg@40: 0.0164 ] 
+2024-11-16 08:22:49,539 - [Epoch  14 /  30] bpr_loss: 31.5615 reg_loss: 26.3632 ss_loss: 127.5557 
+2024-11-16 08:23:04,335 - Epoch  14 Test set [recall@10: 0.0193 recall@20: 0.0320 recall@40: 0.0485 ] Test set [ndcg@10: 0.0097 ndcg@20: 0.0129 ndcg@40: 0.0163 ] 
+2024-11-16 08:24:09,865 - [Epoch  15 /  30] bpr_loss: 30.3034 reg_loss: 27.7691 ss_loss: 123.7730 
+2024-11-16 08:24:25,794 - Epoch  15 Test set [recall@10: 0.0185 recall@20: 0.0308 recall@40: 0.0496 ] Test set [ndcg@10: 0.0093 ndcg@20: 0.0124 ndcg@40: 0.0163 ] 
+2024-11-16 08:25:31,478 - [Epoch  16 /  30] bpr_loss: 28.3791 reg_loss: 29.0887 ss_loss: 119.7268 
+2024-11-16 08:25:45,722 - Epoch  16 Test set [recall@10: 0.0185 recall@20: 0.0304 recall@40: 0.0486 ] Test set [ndcg@10: 0.0095 ndcg@20: 0.0125 ndcg@40: 0.0162 ] 
+2024-11-16 08:26:51,104 - [Epoch  17 /  30] bpr_loss: 27.3921 reg_loss: 30.3434 ss_loss: 119.0494 
+2024-11-16 08:27:06,311 - Epoch  17 Test set [recall@10: 0.0188 recall@20: 0.0316 recall@40: 0.0495 ] Test set [ndcg@10: 0.0092 ndcg@20: 0.0124 ndcg@40: 0.0161 ] 
+2024-11-16 08:28:11,783 - [Epoch  18 /  30] bpr_loss: 26.6060 reg_loss: 31.4965 ss_loss: 117.6937 
+2024-11-16 08:28:25,904 - Epoch  18 Test set [recall@10: 0.0182 recall@20: 0.0317 recall@40: 0.0500 ] Test set [ndcg@10: 0.0090 ndcg@20: 0.0124 ndcg@40: 0.0161 ] 
+2024-11-16 08:29:31,229 - [Epoch  19 /  30] bpr_loss: 25.7504 reg_loss: 32.5569 ss_loss: 115.9991 
+2024-11-16 08:29:46,516 - Epoch  19 Test set [recall@10: 0.0179 recall@20: 0.0307 recall@40: 0.0491 ] Test set [ndcg@10: 0.0093 ndcg@20: 0.0125 ndcg@40: 0.0162 ] 
+2024-11-16 08:30:51,704 - [Epoch  20 /  30] bpr_loss: 24.8500 reg_loss: 33.5902 ss_loss: 113.8506 
+2024-11-16 08:31:06,954 - Epoch  20 Test set [recall@10: 0.0182 recall@20: 0.0292 recall@40: 0.0479 ] Test set [ndcg@10: 0.0092 ndcg@20: 0.0120 ndcg@40: 0.0158 ] 
+2024-11-16 08:32:12,368 - [Epoch  21 /  30] bpr_loss: 24.0731 reg_loss: 34.4776 ss_loss: 111.0374 
+2024-11-16 08:32:27,800 - Epoch  21 Test set [recall@10: 0.0180 recall@20: 0.0312 recall@40: 0.0494 ] Test set [ndcg@10: 0.0092 ndcg@20: 0.0125 ndcg@40: 0.0162 ] 
+2024-11-16 08:33:33,109 - [Epoch  22 /  30] bpr_loss: 23.8402 reg_loss: 35.2785 ss_loss: 110.5696 
+2024-11-16 08:33:47,449 - Epoch  22 Test set [recall@10: 0.0190 recall@20: 0.0312 recall@40: 0.0494 ] Test set [ndcg@10: 0.0093 ndcg@20: 0.0124 ndcg@40: 0.0161 ] 
+2024-11-16 08:34:52,803 - [Epoch  23 /  30] bpr_loss: 23.1340 reg_loss: 35.9940 ss_loss: 111.5716 
+2024-11-16 08:35:07,212 - Epoch  23 Test set [recall@10: 0.0195 recall@20: 0.0306 recall@40: 0.0488 ] Test set [ndcg@10: 0.0095 ndcg@20: 0.0123 ndcg@40: 0.0160 ] 
+2024-11-16 08:36:12,446 - [Epoch  24 /  30] bpr_loss: 22.6165 reg_loss: 36.6302 ss_loss: 109.9118 
+2024-11-16 08:36:26,732 - Epoch  24 Test set [recall@10: 0.0190 recall@20: 0.0306 recall@40: 0.0503 ] Test set [ndcg@10: 0.0093 ndcg@20: 0.0122 ndcg@40: 0.0163 ] 
+2024-11-16 08:37:32,038 - [Epoch  25 /  30] bpr_loss: 21.8780 reg_loss: 37.1606 ss_loss: 108.0708 
+2024-11-16 08:37:46,994 - Epoch  25 Test set [recall@10: 0.0193 recall@20: 0.0311 recall@40: 0.0497 ] Test set [ndcg@10: 0.0097 ndcg@20: 0.0126 ndcg@40: 0.0164 ] 
+2024-11-16 08:38:52,944 - [Epoch  26 /  30] bpr_loss: 21.7059 reg_loss: 37.6212 ss_loss: 108.2790 
+2024-11-16 08:39:07,580 - Epoch  26 Test set [recall@10: 0.0189 recall@20: 0.0305 recall@40: 0.0482 ] Test set [ndcg@10: 0.0095 ndcg@20: 0.0124 ndcg@40: 0.0160 ] 
+2024-11-16 08:40:12,721 - [Epoch  27 /  30] bpr_loss: 21.2522 reg_loss: 38.0282 ss_loss: 106.0146 
+2024-11-16 08:40:27,255 - Epoch  27 Test set [recall@10: 0.0191 recall@20: 0.0305 recall@40: 0.0494 ] Test set [ndcg@10: 0.0093 ndcg@20: 0.0122 ndcg@40: 0.0160 ] 
+2024-11-16 08:41:32,696 - [Epoch  28 /  30] bpr_loss: 20.7310 reg_loss: 38.3888 ss_loss: 107.1045 
+2024-11-16 08:41:48,161 - Epoch  28 Test set [recall@10: 0.0192 recall@20: 0.0303 recall@40: 0.0483 ] Test set [ndcg@10: 0.0094 ndcg@20: 0.0122 ndcg@40: 0.0158 ] 
+2024-11-16 08:42:53,544 - [Epoch  29 /  30] bpr_loss: 20.4199 reg_loss: 38.6804 ss_loss: 106.8955 
+2024-11-16 08:43:07,868 - Epoch  29 Test set [recall@10: 0.0189 recall@20: 0.0306 recall@40: 0.0486 ] Test set [ndcg@10: 0.0092 ndcg@20: 0.0122 ndcg@40: 0.0158 ] 
+2024-11-16 08:43:23,220 - Test set [recall@10: 0.0189 recall@20: 0.0306 recall@40: 0.0486 ] Test set [ndcg@10: 0.0092 ndcg@20: 0.0122 ndcg@40: 0.0158 ] 
+2024-11-16 08:43:38,392 - Test set [recall@10: 0.0189 recall@20: 0.0306 recall@40: 0.0486 ] Test set [ndcg@10: 0.0092 ndcg@20: 0.0122 ndcg@40: 0.0158 ] 

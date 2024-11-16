@@ -1,0 +1,468 @@
+2024-11-15 14:02:32,476 - {'optimizer': {'name': 'adam', 'lr': 0.0001, 'weight_decay': 0.0}, 'train': {'epoch': 330, 'batch_size': 4096, 's_batch': 2048, 'save_model': True, 'log_loss': True, 'loss': 'pairwise', 'test_step': 5, 'reproducible': True, 'seed': 2023, 'tensorboard': True, 'early_stop': True, 'patience': 4}, 'test': {'metrics': ['recall', 'ndcg'], 'k': [10, 20, 40], 'batch_size': 4096}, 'data': {'type': 'social', 'name': 'yelp', 'user_num': 43043, 'item_num': 66576}, 'model': {'name': 'dsl', 'embedding_size': 64, 'gnn_layer': 3, 'uugnn_layer': 2, 'dropout_rate': 0.5, 'leaky': 0.5, 'reg_weight': 0.01, 'soc_weight': 0.01, 'sal_weight': 0.001}, 'tune': {'enable': False, 'hyperparameters': ['gnn_layer', 'uugnn_layer'], 'gnn_layer': [1, 2, 3], 'uugnn_layer': [1, 2, 3]}, 'device': 'cuda', 'log': True}
+2024-11-15 14:02:41,611 - [Epoch   0 / 330] rec_loss: 2804.3123 reg_loss: 2.8802 soc_loss: 28.2138 sal_loss: 4.0836 
+2024-11-15 14:02:58,236 - Epoch   0 Test set [recall@10: 0.0199 recall@20: 0.0343 recall@40: 0.0568 ] Test set [ndcg@10: 0.0104 ndcg@20: 0.0141 ndcg@40: 0.0186 ] 
+2024-11-15 14:02:58,238 - Validation score increased.  Copying the best model ...
+2024-11-15 14:03:06,976 - [Epoch   1 / 330] rec_loss: 2357.7062 reg_loss: 10.5630 soc_loss: 26.2659 sal_loss: 4.0735 
+2024-11-15 14:03:15,424 - [Epoch   2 / 330] rec_loss: 1642.2964 reg_loss: 28.8144 soc_loss: 22.5032 sal_loss: 4.0455 
+2024-11-15 14:03:24,261 - [Epoch   3 / 330] rec_loss: 1219.8505 reg_loss: 47.4733 soc_loss: 19.6750 sal_loss: 4.0111 
+2024-11-15 14:03:33,417 - [Epoch   4 / 330] rec_loss: 1002.1634 reg_loss: 63.2755 soc_loss: 17.8731 sal_loss: 3.9777 
+2024-11-15 14:03:43,000 - [Epoch   5 / 330] rec_loss: 876.8802 reg_loss: 76.3407 soc_loss: 16.6928 sal_loss: 3.9466 
+2024-11-15 14:03:56,450 - Epoch   5 Test set [recall@10: 0.0209 recall@20: 0.0347 recall@40: 0.0582 ] Test set [ndcg@10: 0.0111 ndcg@20: 0.0145 ndcg@40: 0.0193 ] 
+2024-11-15 14:03:56,451 - Validation score increased.  Copying the best model ...
+2024-11-15 14:04:05,003 - [Epoch   6 / 330] rec_loss: 796.8067 reg_loss: 87.2611 soc_loss: 15.8343 sal_loss: 3.9208 
+2024-11-15 14:04:14,272 - [Epoch   7 / 330] rec_loss: 744.9519 reg_loss: 96.3923 soc_loss: 15.1926 sal_loss: 3.8989 
+2024-11-15 14:04:22,869 - [Epoch   8 / 330] rec_loss: 699.3921 reg_loss: 104.2043 soc_loss: 14.7190 sal_loss: 3.8813 
+2024-11-15 14:04:32,108 - [Epoch   9 / 330] rec_loss: 671.1558 reg_loss: 110.9641 soc_loss: 14.3341 sal_loss: 3.8659 
+2024-11-15 14:04:41,528 - [Epoch  10 / 330] rec_loss: 654.0281 reg_loss: 116.6969 soc_loss: 13.9845 sal_loss: 3.8540 
+2024-11-15 14:04:54,964 - Epoch  10 Test set [recall@10: 0.0214 recall@20: 0.0360 recall@40: 0.0593 ] Test set [ndcg@10: 0.0113 ndcg@20: 0.0149 ndcg@40: 0.0197 ] 
+2024-11-15 14:04:54,965 - Validation score increased.  Copying the best model ...
+2024-11-15 14:05:03,472 - [Epoch  11 / 330] rec_loss: 639.9844 reg_loss: 121.6131 soc_loss: 13.7606 sal_loss: 3.8408 
+2024-11-15 14:05:12,064 - [Epoch  12 / 330] rec_loss: 620.8924 reg_loss: 125.8670 soc_loss: 13.5345 sal_loss: 3.8373 
+2024-11-15 14:05:20,960 - [Epoch  13 / 330] rec_loss: 609.2304 reg_loss: 129.6623 soc_loss: 13.3677 sal_loss: 3.8303 
+2024-11-15 14:05:29,728 - [Epoch  14 / 330] rec_loss: 602.8207 reg_loss: 132.9710 soc_loss: 13.2234 sal_loss: 3.8220 
+2024-11-15 14:05:38,576 - [Epoch  15 / 330] rec_loss: 586.3645 reg_loss: 135.9520 soc_loss: 13.0750 sal_loss: 3.8160 
+2024-11-15 14:05:52,116 - Epoch  15 Test set [recall@10: 0.0213 recall@20: 0.0366 recall@40: 0.0599 ] Test set [ndcg@10: 0.0113 ndcg@20: 0.0151 ndcg@40: 0.0199 ] 
+2024-11-15 14:05:52,117 - Early stop counter: 1 out of 4
+2024-11-15 14:06:00,940 - [Epoch  16 / 330] rec_loss: 587.1678 reg_loss: 138.6721 soc_loss: 12.9189 sal_loss: 3.8147 
+2024-11-15 14:06:09,837 - [Epoch  17 / 330] rec_loss: 571.7859 reg_loss: 141.0882 soc_loss: 12.8371 sal_loss: 3.8140 
+2024-11-15 14:06:19,120 - [Epoch  18 / 330] rec_loss: 575.0258 reg_loss: 143.2769 soc_loss: 12.7094 sal_loss: 3.8103 
+2024-11-15 14:06:28,300 - [Epoch  19 / 330] rec_loss: 562.2927 reg_loss: 145.1999 soc_loss: 12.6412 sal_loss: 3.8066 
+2024-11-15 14:06:37,123 - [Epoch  20 / 330] rec_loss: 563.2715 reg_loss: 147.0764 soc_loss: 12.5683 sal_loss: 3.8069 
+2024-11-15 14:06:50,337 - Epoch  20 Test set [recall@10: 0.0214 recall@20: 0.0372 recall@40: 0.0603 ] Test set [ndcg@10: 0.0114 ndcg@20: 0.0154 ndcg@40: 0.0201 ] 
+2024-11-15 14:06:50,337 - Early stop counter: 2 out of 4
+2024-11-15 14:06:59,540 - [Epoch  21 / 330] rec_loss: 552.1223 reg_loss: 148.7285 soc_loss: 12.4608 sal_loss: 3.8067 
+2024-11-15 14:07:08,391 - [Epoch  22 / 330] rec_loss: 549.4275 reg_loss: 150.3415 soc_loss: 12.3806 sal_loss: 3.8046 
+2024-11-15 14:07:17,424 - [Epoch  23 / 330] rec_loss: 537.9333 reg_loss: 151.9166 soc_loss: 12.3222 sal_loss: 3.8069 
+2024-11-15 14:07:26,296 - [Epoch  24 / 330] rec_loss: 534.7332 reg_loss: 153.4685 soc_loss: 12.2585 sal_loss: 3.8064 
+2024-11-15 14:07:35,392 - [Epoch  25 / 330] rec_loss: 530.2427 reg_loss: 154.9437 soc_loss: 12.2001 sal_loss: 3.8062 
+2024-11-15 14:07:48,621 - Epoch  25 Test set [recall@10: 0.0215 recall@20: 0.0379 recall@40: 0.0609 ] Test set [ndcg@10: 0.0115 ndcg@20: 0.0156 ndcg@40: 0.0203 ] 
+2024-11-15 14:07:48,622 - Validation score increased.  Copying the best model ...
+2024-11-15 14:07:57,644 - [Epoch  26 / 330] rec_loss: 531.5891 reg_loss: 156.2727 soc_loss: 12.0900 sal_loss: 3.8058 
+2024-11-15 14:08:06,584 - [Epoch  27 / 330] rec_loss: 521.1618 reg_loss: 157.4797 soc_loss: 12.0376 sal_loss: 3.8089 
+2024-11-15 14:08:15,388 - [Epoch  28 / 330] rec_loss: 524.4354 reg_loss: 158.7174 soc_loss: 12.0093 sal_loss: 3.8083 
+2024-11-15 14:08:24,985 - [Epoch  29 / 330] rec_loss: 517.0203 reg_loss: 159.8550 soc_loss: 11.9439 sal_loss: 3.8099 
+2024-11-15 14:08:34,152 - [Epoch  30 / 330] rec_loss: 517.2168 reg_loss: 160.9270 soc_loss: 11.8525 sal_loss: 3.8101 
+2024-11-15 14:08:47,582 - Epoch  30 Test set [recall@10: 0.0223 recall@20: 0.0384 recall@40: 0.0621 ] Test set [ndcg@10: 0.0117 ndcg@20: 0.0157 ndcg@40: 0.0206 ] 
+2024-11-15 14:08:47,583 - Validation score increased.  Copying the best model ...
+2024-11-15 14:08:56,584 - [Epoch  31 / 330] rec_loss: 514.6443 reg_loss: 161.9275 soc_loss: 11.8423 sal_loss: 3.8094 
+2024-11-15 14:09:05,360 - [Epoch  32 / 330] rec_loss: 507.9033 reg_loss: 162.9952 soc_loss: 11.7445 sal_loss: 3.8107 
+2024-11-15 14:09:13,900 - [Epoch  33 / 330] rec_loss: 508.6083 reg_loss: 163.9862 soc_loss: 11.7470 sal_loss: 3.8110 
+2024-11-15 14:09:22,909 - [Epoch  34 / 330] rec_loss: 504.9961 reg_loss: 164.9813 soc_loss: 11.6971 sal_loss: 3.8118 
+2024-11-15 14:09:32,137 - [Epoch  35 / 330] rec_loss: 497.1331 reg_loss: 165.9803 soc_loss: 11.6276 sal_loss: 3.8160 
+2024-11-15 14:09:45,333 - Epoch  35 Test set [recall@10: 0.0226 recall@20: 0.0395 recall@40: 0.0620 ] Test set [ndcg@10: 0.0120 ndcg@20: 0.0162 ndcg@40: 0.0208 ] 
+2024-11-15 14:09:45,333 - Validation score increased.  Copying the best model ...
+2024-11-15 14:09:54,164 - [Epoch  36 / 330] rec_loss: 494.5298 reg_loss: 166.9979 soc_loss: 11.5740 sal_loss: 3.8140 
+2024-11-15 14:10:02,984 - [Epoch  37 / 330] rec_loss: 491.0702 reg_loss: 168.0179 soc_loss: 11.5359 sal_loss: 3.8193 
+2024-11-15 14:10:11,813 - [Epoch  38 / 330] rec_loss: 491.5696 reg_loss: 168.9750 soc_loss: 11.4756 sal_loss: 3.8181 
+2024-11-15 14:10:21,280 - [Epoch  39 / 330] rec_loss: 485.0144 reg_loss: 169.9003 soc_loss: 11.4451 sal_loss: 3.8204 
+2024-11-15 14:10:29,929 - [Epoch  40 / 330] rec_loss: 478.7971 reg_loss: 170.9074 soc_loss: 11.4146 sal_loss: 3.8199 
+2024-11-15 14:10:42,828 - Epoch  40 Test set [recall@10: 0.0231 recall@20: 0.0403 recall@40: 0.0631 ] Test set [ndcg@10: 0.0122 ndcg@20: 0.0165 ndcg@40: 0.0211 ] 
+2024-11-15 14:10:42,829 - Validation score increased.  Copying the best model ...
+2024-11-15 14:10:51,346 - [Epoch  41 / 330] rec_loss: 478.6153 reg_loss: 171.9061 soc_loss: 11.3656 sal_loss: 3.8196 
+2024-11-15 14:11:00,339 - [Epoch  42 / 330] rec_loss: 476.3576 reg_loss: 172.8676 soc_loss: 11.3058 sal_loss: 3.8245 
+2024-11-15 14:11:09,305 - [Epoch  43 / 330] rec_loss: 475.3599 reg_loss: 173.7622 soc_loss: 11.2513 sal_loss: 3.8259 
+2024-11-15 14:11:18,596 - [Epoch  44 / 330] rec_loss: 471.9522 reg_loss: 174.6732 soc_loss: 11.2061 sal_loss: 3.8262 
+2024-11-15 14:11:27,548 - [Epoch  45 / 330] rec_loss: 467.5461 reg_loss: 175.5639 soc_loss: 11.1778 sal_loss: 3.8317 
+2024-11-15 14:11:40,922 - Epoch  45 Test set [recall@10: 0.0235 recall@20: 0.0406 recall@40: 0.0652 ] Test set [ndcg@10: 0.0123 ndcg@20: 0.0166 ndcg@40: 0.0216 ] 
+2024-11-15 14:11:40,923 - Validation score increased.  Copying the best model ...
+2024-11-15 14:11:50,201 - [Epoch  46 / 330] rec_loss: 465.2234 reg_loss: 176.5212 soc_loss: 11.1134 sal_loss: 3.8287 
+2024-11-15 14:11:59,164 - [Epoch  47 / 330] rec_loss: 457.5102 reg_loss: 177.4765 soc_loss: 11.0470 sal_loss: 3.8281 
+2024-11-15 14:12:08,052 - [Epoch  48 / 330] rec_loss: 458.9685 reg_loss: 178.4684 soc_loss: 11.0310 sal_loss: 3.8317 
+2024-11-15 14:12:17,403 - [Epoch  49 / 330] rec_loss: 455.2801 reg_loss: 179.3869 soc_loss: 11.0033 sal_loss: 3.8336 
+2024-11-15 14:12:26,508 - [Epoch  50 / 330] rec_loss: 451.1192 reg_loss: 180.2826 soc_loss: 10.9576 sal_loss: 3.8325 
+2024-11-15 14:12:39,364 - Epoch  50 Test set [recall@10: 0.0245 recall@20: 0.0420 recall@40: 0.0663 ] Test set [ndcg@10: 0.0127 ndcg@20: 0.0171 ndcg@40: 0.0221 ] 
+2024-11-15 14:12:39,364 - Validation score increased.  Copying the best model ...
+2024-11-15 14:12:47,775 - [Epoch  51 / 330] rec_loss: 449.8279 reg_loss: 181.1486 soc_loss: 10.9127 sal_loss: 3.8378 
+2024-11-15 14:12:56,644 - [Epoch  52 / 330] rec_loss: 443.8211 reg_loss: 182.0230 soc_loss: 10.8929 sal_loss: 3.8361 
+2024-11-15 14:13:05,096 - [Epoch  53 / 330] rec_loss: 441.7498 reg_loss: 182.9463 soc_loss: 10.8626 sal_loss: 3.8367 
+2024-11-15 14:13:14,151 - [Epoch  54 / 330] rec_loss: 443.9481 reg_loss: 183.7697 soc_loss: 10.8072 sal_loss: 3.8397 
+2024-11-15 14:13:23,173 - [Epoch  55 / 330] rec_loss: 434.4056 reg_loss: 184.6480 soc_loss: 10.7727 sal_loss: 3.8406 
+2024-11-15 14:13:36,457 - Epoch  55 Test set [recall@10: 0.0252 recall@20: 0.0425 recall@40: 0.0680 ] Test set [ndcg@10: 0.0130 ndcg@20: 0.0174 ndcg@40: 0.0225 ] 
+2024-11-15 14:13:36,458 - Validation score increased.  Copying the best model ...
+2024-11-15 14:13:45,032 - [Epoch  56 / 330] rec_loss: 433.3887 reg_loss: 185.5834 soc_loss: 10.7215 sal_loss: 3.8408 
+2024-11-15 14:13:53,928 - [Epoch  57 / 330] rec_loss: 429.5947 reg_loss: 186.4702 soc_loss: 10.6754 sal_loss: 3.8429 
+2024-11-15 14:14:02,996 - [Epoch  58 / 330] rec_loss: 430.1117 reg_loss: 187.3615 soc_loss: 10.6903 sal_loss: 3.8437 
+2024-11-15 14:14:11,640 - [Epoch  59 / 330] rec_loss: 425.2913 reg_loss: 188.2000 soc_loss: 10.6350 sal_loss: 3.8428 
+2024-11-15 14:14:20,828 - [Epoch  60 / 330] rec_loss: 422.8170 reg_loss: 189.1000 soc_loss: 10.5902 sal_loss: 3.8464 
+2024-11-15 14:14:33,664 - Epoch  60 Test set [recall@10: 0.0252 recall@20: 0.0432 recall@40: 0.0682 ] Test set [ndcg@10: 0.0131 ndcg@20: 0.0176 ndcg@40: 0.0227 ] 
+2024-11-15 14:14:33,664 - Validation score increased.  Copying the best model ...
+2024-11-15 14:14:42,332 - [Epoch  61 / 330] rec_loss: 425.6644 reg_loss: 189.9205 soc_loss: 10.5563 sal_loss: 3.8466 
+2024-11-15 14:14:51,605 - [Epoch  62 / 330] rec_loss: 421.4655 reg_loss: 190.6582 soc_loss: 10.5211 sal_loss: 3.8470 
+2024-11-15 14:15:00,472 - [Epoch  63 / 330] rec_loss: 420.0333 reg_loss: 191.4113 soc_loss: 10.5000 sal_loss: 3.8506 
+2024-11-15 14:15:09,220 - [Epoch  64 / 330] rec_loss: 419.1946 reg_loss: 192.1793 soc_loss: 10.4916 sal_loss: 3.8492 
+2024-11-15 14:15:18,484 - [Epoch  65 / 330] rec_loss: 412.1782 reg_loss: 192.9490 soc_loss: 10.4315 sal_loss: 3.8499 
+2024-11-15 14:15:32,685 - Epoch  65 Test set [recall@10: 0.0257 recall@20: 0.0432 recall@40: 0.0692 ] Test set [ndcg@10: 0.0132 ndcg@20: 0.0176 ndcg@40: 0.0229 ] 
+2024-11-15 14:15:32,686 - Validation score increased.  Copying the best model ...
+2024-11-15 14:15:41,800 - [Epoch  66 / 330] rec_loss: 405.8023 reg_loss: 193.8639 soc_loss: 10.4170 sal_loss: 3.8516 
+2024-11-15 14:15:50,508 - [Epoch  67 / 330] rec_loss: 406.8444 reg_loss: 194.7122 soc_loss: 10.4056 sal_loss: 3.8558 
+2024-11-15 14:15:59,044 - [Epoch  68 / 330] rec_loss: 401.6999 reg_loss: 195.5853 soc_loss: 10.3632 sal_loss: 3.8568 
+2024-11-15 14:16:07,905 - [Epoch  69 / 330] rec_loss: 405.2070 reg_loss: 196.4737 soc_loss: 10.3160 sal_loss: 3.8551 
+2024-11-15 14:16:17,168 - [Epoch  70 / 330] rec_loss: 401.2021 reg_loss: 197.2599 soc_loss: 10.2733 sal_loss: 3.8569 
+2024-11-15 14:16:31,814 - Epoch  70 Test set [recall@10: 0.0259 recall@20: 0.0437 recall@40: 0.0698 ] Test set [ndcg@10: 0.0134 ndcg@20: 0.0178 ndcg@40: 0.0231 ] 
+2024-11-15 14:16:31,815 - Validation score increased.  Copying the best model ...
+2024-11-15 14:16:40,792 - [Epoch  71 / 330] rec_loss: 390.9216 reg_loss: 198.1188 soc_loss: 10.2760 sal_loss: 3.8549 
+2024-11-15 14:16:49,776 - [Epoch  72 / 330] rec_loss: 400.4652 reg_loss: 198.8975 soc_loss: 10.2401 sal_loss: 3.8567 
+2024-11-15 14:16:58,944 - [Epoch  73 / 330] rec_loss: 388.6488 reg_loss: 199.6847 soc_loss: 10.2050 sal_loss: 3.8592 
+2024-11-15 14:17:08,268 - [Epoch  74 / 330] rec_loss: 388.6277 reg_loss: 200.5213 soc_loss: 10.1677 sal_loss: 3.8584 
+2024-11-15 14:17:17,201 - [Epoch  75 / 330] rec_loss: 385.5691 reg_loss: 201.3376 soc_loss: 10.1425 sal_loss: 3.8612 
+2024-11-15 14:17:30,645 - Epoch  75 Test set [recall@10: 0.0262 recall@20: 0.0437 recall@40: 0.0706 ] Test set [ndcg@10: 0.0135 ndcg@20: 0.0179 ndcg@40: 0.0233 ] 
+2024-11-15 14:17:30,646 - Validation score increased.  Copying the best model ...
+2024-11-15 14:17:39,372 - [Epoch  76 / 330] rec_loss: 388.1755 reg_loss: 202.1372 soc_loss: 10.1351 sal_loss: 3.8639 
+2024-11-15 14:17:48,252 - [Epoch  77 / 330] rec_loss: 386.3152 reg_loss: 202.8081 soc_loss: 10.1032 sal_loss: 3.8661 
+2024-11-15 14:17:56,756 - [Epoch  78 / 330] rec_loss: 381.5079 reg_loss: 203.5609 soc_loss: 10.0658 sal_loss: 3.8626 
+2024-11-15 14:18:05,852 - [Epoch  79 / 330] rec_loss: 379.5749 reg_loss: 204.3157 soc_loss: 10.0775 sal_loss: 3.8663 
+2024-11-15 14:18:15,084 - [Epoch  80 / 330] rec_loss: 381.0915 reg_loss: 204.9879 soc_loss: 10.0429 sal_loss: 3.8688 
+2024-11-15 14:18:28,214 - Epoch  80 Test set [recall@10: 0.0266 recall@20: 0.0442 recall@40: 0.0710 ] Test set [ndcg@10: 0.0135 ndcg@20: 0.0179 ndcg@40: 0.0234 ] 
+2024-11-15 14:18:28,215 - Validation score increased.  Copying the best model ...
+2024-11-15 14:18:36,953 - [Epoch  81 / 330] rec_loss: 378.7885 reg_loss: 205.6969 soc_loss: 10.0266 sal_loss: 3.8663 
+2024-11-15 14:18:45,900 - [Epoch  82 / 330] rec_loss: 380.1462 reg_loss: 206.3388 soc_loss: 9.9907 sal_loss: 3.8700 
+2024-11-15 14:18:55,008 - [Epoch  83 / 330] rec_loss: 370.8490 reg_loss: 207.0271 soc_loss: 9.9653 sal_loss: 3.8721 
+2024-11-15 14:19:04,200 - [Epoch  84 / 330] rec_loss: 372.1875 reg_loss: 207.7348 soc_loss: 9.9582 sal_loss: 3.8725 
+2024-11-15 14:19:13,984 - [Epoch  85 / 330] rec_loss: 370.7096 reg_loss: 208.4262 soc_loss: 9.9797 sal_loss: 3.8725 
+2024-11-15 14:19:26,929 - Epoch  85 Test set [recall@10: 0.0265 recall@20: 0.0444 recall@40: 0.0718 ] Test set [ndcg@10: 0.0136 ndcg@20: 0.0181 ndcg@40: 0.0236 ] 
+2024-11-15 14:19:26,930 - Early stop counter: 1 out of 4
+2024-11-15 14:19:36,153 - [Epoch  86 / 330] rec_loss: 364.1956 reg_loss: 209.1912 soc_loss: 9.9310 sal_loss: 3.8744 
+2024-11-15 14:19:45,028 - [Epoch  87 / 330] rec_loss: 366.4007 reg_loss: 209.9180 soc_loss: 9.9189 sal_loss: 3.8741 
+2024-11-15 14:19:53,896 - [Epoch  88 / 330] rec_loss: 365.0862 reg_loss: 210.5650 soc_loss: 9.8634 sal_loss: 3.8759 
+2024-11-15 14:20:03,224 - [Epoch  89 / 330] rec_loss: 365.0810 reg_loss: 211.2007 soc_loss: 9.8722 sal_loss: 3.8761 
+2024-11-15 14:20:11,817 - [Epoch  90 / 330] rec_loss: 360.7671 reg_loss: 211.8283 soc_loss: 9.8546 sal_loss: 3.8794 
+2024-11-15 14:20:24,792 - Epoch  90 Test set [recall@10: 0.0269 recall@20: 0.0445 recall@40: 0.0718 ] Test set [ndcg@10: 0.0137 ndcg@20: 0.0182 ndcg@40: 0.0237 ] 
+2024-11-15 14:20:24,793 - Validation score increased.  Copying the best model ...
+2024-11-15 14:20:33,673 - [Epoch  91 / 330] rec_loss: 357.8925 reg_loss: 212.5120 soc_loss: 9.8123 sal_loss: 3.8791 
+2024-11-15 14:20:42,952 - [Epoch  92 / 330] rec_loss: 356.6979 reg_loss: 213.1952 soc_loss: 9.8205 sal_loss: 3.8804 
+2024-11-15 14:20:51,860 - [Epoch  93 / 330] rec_loss: 351.3931 reg_loss: 213.9034 soc_loss: 9.7676 sal_loss: 3.8794 
+2024-11-15 14:21:01,461 - [Epoch  94 / 330] rec_loss: 354.5748 reg_loss: 214.6034 soc_loss: 9.8121 sal_loss: 3.8808 
+2024-11-15 14:21:10,391 - [Epoch  95 / 330] rec_loss: 352.0205 reg_loss: 215.2584 soc_loss: 9.7480 sal_loss: 3.8816 
+2024-11-15 14:21:23,507 - Epoch  95 Test set [recall@10: 0.0271 recall@20: 0.0451 recall@40: 0.0724 ] Test set [ndcg@10: 0.0139 ndcg@20: 0.0184 ndcg@40: 0.0240 ] 
+2024-11-15 14:21:23,508 - Validation score increased.  Copying the best model ...
+2024-11-15 14:21:32,504 - [Epoch  96 / 330] rec_loss: 349.1668 reg_loss: 215.8684 soc_loss: 9.7484 sal_loss: 3.8849 
+2024-11-15 14:21:41,776 - [Epoch  97 / 330] rec_loss: 352.5874 reg_loss: 216.4881 soc_loss: 9.7291 sal_loss: 3.8841 
+2024-11-15 14:21:51,151 - [Epoch  98 / 330] rec_loss: 350.7835 reg_loss: 217.0004 soc_loss: 9.6984 sal_loss: 3.8855 
+2024-11-15 14:22:00,561 - [Epoch  99 / 330] rec_loss: 347.7327 reg_loss: 217.5952 soc_loss: 9.7408 sal_loss: 3.8847 
+2024-11-15 14:22:10,004 - [Epoch 100 / 330] rec_loss: 347.8221 reg_loss: 218.1248 soc_loss: 9.6972 sal_loss: 3.8873 
+2024-11-15 14:22:23,974 - Epoch 100 Test set [recall@10: 0.0269 recall@20: 0.0455 recall@40: 0.0725 ] Test set [ndcg@10: 0.0139 ndcg@20: 0.0185 ndcg@40: 0.0240 ] 
+2024-11-15 14:22:23,974 - Early stop counter: 1 out of 4
+2024-11-15 14:22:32,925 - [Epoch 101 / 330] rec_loss: 340.5233 reg_loss: 218.7731 soc_loss: 9.6950 sal_loss: 3.8873 
+2024-11-15 14:22:41,916 - [Epoch 102 / 330] rec_loss: 343.0242 reg_loss: 219.4242 soc_loss: 9.6514 sal_loss: 3.8875 
+2024-11-15 14:22:51,215 - [Epoch 103 / 330] rec_loss: 343.8007 reg_loss: 219.9472 soc_loss: 9.6407 sal_loss: 3.8899 
+2024-11-15 14:23:00,412 - [Epoch 104 / 330] rec_loss: 340.0908 reg_loss: 220.4668 soc_loss: 9.6431 sal_loss: 3.8922 
+2024-11-15 14:23:09,640 - [Epoch 105 / 330] rec_loss: 337.1814 reg_loss: 221.0548 soc_loss: 9.6592 sal_loss: 3.8929 
+2024-11-15 14:23:23,346 - Epoch 105 Test set [recall@10: 0.0271 recall@20: 0.0456 recall@40: 0.0731 ] Test set [ndcg@10: 0.0139 ndcg@20: 0.0186 ndcg@40: 0.0242 ] 
+2024-11-15 14:23:23,346 - Early stop counter: 2 out of 4
+2024-11-15 14:23:32,501 - [Epoch 106 / 330] rec_loss: 337.3484 reg_loss: 221.5991 soc_loss: 9.6374 sal_loss: 3.8916 
+2024-11-15 14:23:41,615 - [Epoch 107 / 330] rec_loss: 335.7151 reg_loss: 222.1463 soc_loss: 9.6326 sal_loss: 3.8931 
+2024-11-15 14:23:50,692 - [Epoch 108 / 330] rec_loss: 333.1554 reg_loss: 222.7164 soc_loss: 9.6064 sal_loss: 3.8940 
+2024-11-15 14:24:00,221 - [Epoch 109 / 330] rec_loss: 332.9641 reg_loss: 223.3638 soc_loss: 9.6106 sal_loss: 3.8956 
+2024-11-15 14:24:09,113 - [Epoch 110 / 330] rec_loss: 330.8371 reg_loss: 223.9043 soc_loss: 9.5677 sal_loss: 3.8953 
+2024-11-15 14:24:22,972 - Epoch 110 Test set [recall@10: 0.0274 recall@20: 0.0457 recall@40: 0.0733 ] Test set [ndcg@10: 0.0140 ndcg@20: 0.0186 ndcg@40: 0.0242 ] 
+2024-11-15 14:24:22,973 - Validation score increased.  Copying the best model ...
+2024-11-15 14:24:32,052 - [Epoch 111 / 330] rec_loss: 328.1821 reg_loss: 224.4762 soc_loss: 9.5720 sal_loss: 3.8965 
+2024-11-15 14:24:40,865 - [Epoch 112 / 330] rec_loss: 329.6412 reg_loss: 225.0508 soc_loss: 9.5488 sal_loss: 3.8995 
+2024-11-15 14:24:50,196 - [Epoch 113 / 330] rec_loss: 327.3972 reg_loss: 225.5770 soc_loss: 9.5598 sal_loss: 3.8958 
+2024-11-15 14:24:59,448 - [Epoch 114 / 330] rec_loss: 327.7008 reg_loss: 226.0409 soc_loss: 9.5552 sal_loss: 3.8993 
+2024-11-15 14:25:08,443 - [Epoch 115 / 330] rec_loss: 322.4521 reg_loss: 226.5669 soc_loss: 9.5134 sal_loss: 3.8977 
+2024-11-15 14:25:22,211 - Epoch 115 Test set [recall@10: 0.0279 recall@20: 0.0464 recall@40: 0.0736 ] Test set [ndcg@10: 0.0142 ndcg@20: 0.0189 ndcg@40: 0.0244 ] 
+2024-11-15 14:25:22,212 - Validation score increased.  Copying the best model ...
+2024-11-15 14:25:31,240 - [Epoch 116 / 330] rec_loss: 321.5315 reg_loss: 227.1282 soc_loss: 9.5451 sal_loss: 3.9014 
+2024-11-15 14:25:40,540 - [Epoch 117 / 330] rec_loss: 323.2310 reg_loss: 227.6185 soc_loss: 9.4997 sal_loss: 3.9014 
+2024-11-15 14:25:49,577 - [Epoch 118 / 330] rec_loss: 319.9802 reg_loss: 228.1155 soc_loss: 9.5222 sal_loss: 3.9003 
+2024-11-15 14:25:58,288 - [Epoch 119 / 330] rec_loss: 319.2824 reg_loss: 228.6063 soc_loss: 9.5165 sal_loss: 3.9023 
+2024-11-15 14:26:06,929 - [Epoch 120 / 330] rec_loss: 319.6266 reg_loss: 229.0805 soc_loss: 9.5024 sal_loss: 3.9019 
+2024-11-15 14:26:20,649 - Epoch 120 Test set [recall@10: 0.0279 recall@20: 0.0468 recall@40: 0.0742 ] Test set [ndcg@10: 0.0143 ndcg@20: 0.0190 ndcg@40: 0.0246 ] 
+2024-11-15 14:26:20,650 - Validation score increased.  Copying the best model ...
+2024-11-15 14:26:29,572 - [Epoch 121 / 330] rec_loss: 312.9384 reg_loss: 229.6144 soc_loss: 9.4981 sal_loss: 3.9019 
+2024-11-15 14:26:38,363 - [Epoch 122 / 330] rec_loss: 315.3499 reg_loss: 230.1418 soc_loss: 9.4929 sal_loss: 3.9018 
+2024-11-15 14:26:47,113 - [Epoch 123 / 330] rec_loss: 315.4022 reg_loss: 230.6340 soc_loss: 9.4710 sal_loss: 3.9023 
+2024-11-15 14:26:55,864 - [Epoch 124 / 330] rec_loss: 314.5847 reg_loss: 231.0855 soc_loss: 9.4704 sal_loss: 3.9052 
+2024-11-15 14:27:05,049 - [Epoch 125 / 330] rec_loss: 313.6406 reg_loss: 231.5425 soc_loss: 9.4810 sal_loss: 3.9053 
+2024-11-15 14:27:18,558 - Epoch 125 Test set [recall@10: 0.0280 recall@20: 0.0471 recall@40: 0.0746 ] Test set [ndcg@10: 0.0143 ndcg@20: 0.0192 ndcg@40: 0.0247 ] 
+2024-11-15 14:27:18,560 - Validation score increased.  Copying the best model ...
+2024-11-15 14:27:27,840 - [Epoch 126 / 330] rec_loss: 315.0257 reg_loss: 231.9776 soc_loss: 9.4761 sal_loss: 3.9070 
+2024-11-15 14:27:36,896 - [Epoch 127 / 330] rec_loss: 309.6420 reg_loss: 232.3821 soc_loss: 9.4529 sal_loss: 3.9057 
+2024-11-15 14:27:45,896 - [Epoch 128 / 330] rec_loss: 312.9583 reg_loss: 232.8468 soc_loss: 9.4708 sal_loss: 3.9088 
+2024-11-15 14:27:55,000 - [Epoch 129 / 330] rec_loss: 313.9931 reg_loss: 233.1932 soc_loss: 9.4522 sal_loss: 3.9105 
+2024-11-15 14:28:04,549 - [Epoch 130 / 330] rec_loss: 304.6935 reg_loss: 233.6510 soc_loss: 9.4637 sal_loss: 3.9083 
+2024-11-15 14:28:17,873 - Epoch 130 Test set [recall@10: 0.0282 recall@20: 0.0474 recall@40: 0.0752 ] Test set [ndcg@10: 0.0144 ndcg@20: 0.0193 ndcg@40: 0.0249 ] 
+2024-11-15 14:28:17,875 - Validation score increased.  Copying the best model ...
+2024-11-15 14:28:26,900 - [Epoch 131 / 330] rec_loss: 307.9297 reg_loss: 234.1891 soc_loss: 9.4677 sal_loss: 3.9095 
+2024-11-15 14:28:35,681 - [Epoch 132 / 330] rec_loss: 304.3734 reg_loss: 234.6497 soc_loss: 9.4527 sal_loss: 3.9089 
+2024-11-15 14:28:45,021 - [Epoch 133 / 330] rec_loss: 301.7878 reg_loss: 235.1601 soc_loss: 9.4493 sal_loss: 3.9077 
+2024-11-15 14:28:53,968 - [Epoch 134 / 330] rec_loss: 304.4884 reg_loss: 235.5771 soc_loss: 9.4469 sal_loss: 3.9119 
+2024-11-15 14:29:03,168 - [Epoch 135 / 330] rec_loss: 303.2942 reg_loss: 235.9794 soc_loss: 9.4506 sal_loss: 3.9114 
+2024-11-15 14:29:16,896 - Epoch 135 Test set [recall@10: 0.0287 recall@20: 0.0479 recall@40: 0.0758 ] Test set [ndcg@10: 0.0145 ndcg@20: 0.0193 ndcg@40: 0.0250 ] 
+2024-11-15 14:29:16,897 - Validation score increased.  Copying the best model ...
+2024-11-15 14:29:25,936 - [Epoch 136 / 330] rec_loss: 297.8420 reg_loss: 236.4412 soc_loss: 9.4387 sal_loss: 3.9122 
+2024-11-15 14:29:35,108 - [Epoch 137 / 330] rec_loss: 300.1774 reg_loss: 236.9171 soc_loss: 9.4461 sal_loss: 3.9133 
+2024-11-15 14:29:44,404 - [Epoch 138 / 330] rec_loss: 294.3852 reg_loss: 237.3983 soc_loss: 9.4168 sal_loss: 3.9132 
+2024-11-15 14:29:53,139 - [Epoch 139 / 330] rec_loss: 299.1913 reg_loss: 237.8385 soc_loss: 9.4291 sal_loss: 3.9139 
+2024-11-15 14:30:02,376 - [Epoch 140 / 330] rec_loss: 295.5329 reg_loss: 238.1914 soc_loss: 9.3941 sal_loss: 3.9134 
+2024-11-15 14:30:17,356 - Epoch 140 Test set [recall@10: 0.0288 recall@20: 0.0479 recall@40: 0.0768 ] Test set [ndcg@10: 0.0147 ndcg@20: 0.0195 ndcg@40: 0.0254 ] 
+2024-11-15 14:30:17,356 - Validation score increased.  Copying the best model ...
+2024-11-15 14:30:25,793 - [Epoch 141 / 330] rec_loss: 294.4130 reg_loss: 238.6077 soc_loss: 9.4184 sal_loss: 3.9152 
+2024-11-15 14:30:34,452 - [Epoch 142 / 330] rec_loss: 296.3512 reg_loss: 238.9869 soc_loss: 9.3927 sal_loss: 3.9160 
+2024-11-15 14:30:43,666 - [Epoch 143 / 330] rec_loss: 293.7905 reg_loss: 239.3379 soc_loss: 9.4359 sal_loss: 3.9169 
+2024-11-15 14:30:52,608 - [Epoch 144 / 330] rec_loss: 294.1050 reg_loss: 239.7270 soc_loss: 9.4161 sal_loss: 3.9145 
+2024-11-15 14:31:01,277 - [Epoch 145 / 330] rec_loss: 286.6199 reg_loss: 240.1804 soc_loss: 9.3946 sal_loss: 3.9169 
+2024-11-15 14:31:14,021 - Epoch 145 Test set [recall@10: 0.0292 recall@20: 0.0477 recall@40: 0.0767 ] Test set [ndcg@10: 0.0148 ndcg@20: 0.0195 ndcg@40: 0.0254 ] 
+2024-11-15 14:31:14,022 - Validation score increased.  Copying the best model ...
+2024-11-15 14:31:23,127 - [Epoch 146 / 330] rec_loss: 291.0884 reg_loss: 240.6219 soc_loss: 9.3936 sal_loss: 3.9184 
+2024-11-15 14:31:32,279 - [Epoch 147 / 330] rec_loss: 288.2224 reg_loss: 241.0051 soc_loss: 9.4125 sal_loss: 3.9187 
+2024-11-15 14:31:40,944 - [Epoch 148 / 330] rec_loss: 289.8290 reg_loss: 241.4093 soc_loss: 9.3796 sal_loss: 3.9189 
+2024-11-15 14:31:50,077 - [Epoch 149 / 330] rec_loss: 289.5602 reg_loss: 241.7130 soc_loss: 9.3893 sal_loss: 3.9160 
+2024-11-15 14:31:59,640 - [Epoch 150 / 330] rec_loss: 289.8950 reg_loss: 241.9918 soc_loss: 9.3851 sal_loss: 3.9172 
+2024-11-15 14:32:13,375 - Epoch 150 Test set [recall@10: 0.0295 recall@20: 0.0484 recall@40: 0.0770 ] Test set [ndcg@10: 0.0149 ndcg@20: 0.0197 ndcg@40: 0.0255 ] 
+2024-11-15 14:32:13,376 - Validation score increased.  Copying the best model ...
+2024-11-15 14:32:22,737 - [Epoch 151 / 330] rec_loss: 285.9220 reg_loss: 242.3626 soc_loss: 9.4000 sal_loss: 3.9176 
+2024-11-15 14:32:31,604 - [Epoch 152 / 330] rec_loss: 287.6126 reg_loss: 242.7058 soc_loss: 9.3974 sal_loss: 3.9197 
+2024-11-15 14:32:40,508 - [Epoch 153 / 330] rec_loss: 284.7109 reg_loss: 243.0367 soc_loss: 9.4021 sal_loss: 3.9195 
+2024-11-15 14:32:50,132 - [Epoch 154 / 330] rec_loss: 287.0541 reg_loss: 243.3519 soc_loss: 9.4094 sal_loss: 3.9201 
+2024-11-15 14:32:59,501 - [Epoch 155 / 330] rec_loss: 284.9157 reg_loss: 243.6645 soc_loss: 9.3781 sal_loss: 3.9194 
+2024-11-15 14:33:12,821 - Epoch 155 Test set [recall@10: 0.0295 recall@20: 0.0491 recall@40: 0.0769 ] Test set [ndcg@10: 0.0150 ndcg@20: 0.0199 ndcg@40: 0.0255 ] 
+2024-11-15 14:33:12,822 - Validation score increased.  Copying the best model ...
+2024-11-15 14:33:21,724 - [Epoch 156 / 330] rec_loss: 281.8125 reg_loss: 244.0046 soc_loss: 9.3854 sal_loss: 3.9216 
+2024-11-15 14:33:30,652 - [Epoch 157 / 330] rec_loss: 283.1892 reg_loss: 244.3909 soc_loss: 9.3933 sal_loss: 3.9210 
+2024-11-15 14:33:39,516 - [Epoch 158 / 330] rec_loss: 286.1376 reg_loss: 244.6546 soc_loss: 9.4250 sal_loss: 3.9227 
+2024-11-15 14:33:48,612 - [Epoch 159 / 330] rec_loss: 279.5760 reg_loss: 244.9597 soc_loss: 9.4057 sal_loss: 3.9246 
+2024-11-15 14:33:58,037 - [Epoch 160 / 330] rec_loss: 281.1239 reg_loss: 245.3135 soc_loss: 9.3869 sal_loss: 3.9241 
+2024-11-15 14:34:11,601 - Epoch 160 Test set [recall@10: 0.0298 recall@20: 0.0489 recall@40: 0.0775 ] Test set [ndcg@10: 0.0150 ndcg@20: 0.0198 ndcg@40: 0.0256 ] 
+2024-11-15 14:34:11,602 - Validation score increased.  Copying the best model ...
+2024-11-15 14:34:20,760 - [Epoch 161 / 330] rec_loss: 279.6977 reg_loss: 245.6865 soc_loss: 9.3833 sal_loss: 3.9253 
+2024-11-15 14:34:29,580 - [Epoch 162 / 330] rec_loss: 274.4620 reg_loss: 246.1223 soc_loss: 9.4140 sal_loss: 3.9258 
+2024-11-15 14:34:38,796 - [Epoch 163 / 330] rec_loss: 276.0666 reg_loss: 246.5584 soc_loss: 9.3646 sal_loss: 3.9231 
+2024-11-15 14:34:47,784 - [Epoch 164 / 330] rec_loss: 278.7072 reg_loss: 246.9349 soc_loss: 9.3818 sal_loss: 3.9249 
+2024-11-15 14:34:56,408 - [Epoch 165 / 330] rec_loss: 280.0021 reg_loss: 247.1543 soc_loss: 9.3887 sal_loss: 3.9241 
+2024-11-15 14:35:09,446 - Epoch 165 Test set [recall@10: 0.0301 recall@20: 0.0493 recall@40: 0.0782 ] Test set [ndcg@10: 0.0152 ndcg@20: 0.0200 ndcg@40: 0.0259 ] 
+2024-11-15 14:35:09,447 - Validation score increased.  Copying the best model ...
+2024-11-15 14:35:18,189 - [Epoch 166 / 330] rec_loss: 275.0457 reg_loss: 247.4610 soc_loss: 9.4013 sal_loss: 3.9263 
+2024-11-15 14:35:27,460 - [Epoch 167 / 330] rec_loss: 274.7978 reg_loss: 247.8316 soc_loss: 9.3833 sal_loss: 3.9294 
+2024-11-15 14:35:36,288 - [Epoch 168 / 330] rec_loss: 277.7524 reg_loss: 248.1172 soc_loss: 9.3998 sal_loss: 3.9247 
+2024-11-15 14:35:45,495 - [Epoch 169 / 330] rec_loss: 271.5511 reg_loss: 248.4007 soc_loss: 9.4074 sal_loss: 3.9268 
+2024-11-15 14:35:54,219 - [Epoch 170 / 330] rec_loss: 276.3504 reg_loss: 248.6947 soc_loss: 9.3817 sal_loss: 3.9274 
+2024-11-15 14:36:07,035 - Epoch 170 Test set [recall@10: 0.0300 recall@20: 0.0494 recall@40: 0.0781 ] Test set [ndcg@10: 0.0152 ndcg@20: 0.0201 ndcg@40: 0.0259 ] 
+2024-11-15 14:36:07,035 - Early stop counter: 1 out of 4
+2024-11-15 14:36:16,121 - [Epoch 171 / 330] rec_loss: 271.2934 reg_loss: 249.0344 soc_loss: 9.3929 sal_loss: 3.9257 
+2024-11-15 14:36:24,924 - [Epoch 172 / 330] rec_loss: 270.3420 reg_loss: 249.3896 soc_loss: 9.4048 sal_loss: 3.9308 
+2024-11-15 14:36:33,692 - [Epoch 173 / 330] rec_loss: 271.6491 reg_loss: 249.7115 soc_loss: 9.4033 sal_loss: 3.9268 
+2024-11-15 14:36:42,748 - [Epoch 174 / 330] rec_loss: 270.2968 reg_loss: 250.0384 soc_loss: 9.3972 sal_loss: 3.9282 
+2024-11-15 14:36:51,576 - [Epoch 175 / 330] rec_loss: 271.7372 reg_loss: 250.3298 soc_loss: 9.3807 sal_loss: 3.9310 
+2024-11-15 14:37:05,379 - Epoch 175 Test set [recall@10: 0.0302 recall@20: 0.0495 recall@40: 0.0787 ] Test set [ndcg@10: 0.0153 ndcg@20: 0.0202 ndcg@40: 0.0261 ] 
+2024-11-15 14:37:05,380 - Validation score increased.  Copying the best model ...
+2024-11-15 14:37:14,012 - [Epoch 176 / 330] rec_loss: 271.7141 reg_loss: 250.6261 soc_loss: 9.3988 sal_loss: 3.9291 
+2024-11-15 14:37:22,764 - [Epoch 177 / 330] rec_loss: 269.1145 reg_loss: 250.8965 soc_loss: 9.3897 sal_loss: 3.9301 
+2024-11-15 14:37:32,148 - [Epoch 178 / 330] rec_loss: 263.3961 reg_loss: 251.2206 soc_loss: 9.3603 sal_loss: 3.9307 
+2024-11-15 14:37:41,185 - [Epoch 179 / 330] rec_loss: 264.4224 reg_loss: 251.6051 soc_loss: 9.4008 sal_loss: 3.9323 
+2024-11-15 14:37:50,120 - [Epoch 180 / 330] rec_loss: 269.2220 reg_loss: 251.8901 soc_loss: 9.3872 sal_loss: 3.9316 
+2024-11-15 14:38:02,662 - Epoch 180 Test set [recall@10: 0.0302 recall@20: 0.0497 recall@40: 0.0796 ] Test set [ndcg@10: 0.0153 ndcg@20: 0.0202 ndcg@40: 0.0263 ] 
+2024-11-15 14:38:02,662 - Early stop counter: 1 out of 4
+2024-11-15 14:38:11,684 - [Epoch 181 / 330] rec_loss: 264.1754 reg_loss: 252.1574 soc_loss: 9.3845 sal_loss: 3.9308 
+2024-11-15 14:38:20,432 - [Epoch 182 / 330] rec_loss: 264.7957 reg_loss: 252.4709 soc_loss: 9.4230 sal_loss: 3.9324 
+2024-11-15 14:38:29,108 - [Epoch 183 / 330] rec_loss: 268.0415 reg_loss: 252.7180 soc_loss: 9.3977 sal_loss: 3.9335 
+2024-11-15 14:38:38,592 - [Epoch 184 / 330] rec_loss: 263.7457 reg_loss: 252.9804 soc_loss: 9.4290 sal_loss: 3.9327 
+2024-11-15 14:38:47,768 - [Epoch 185 / 330] rec_loss: 261.1935 reg_loss: 253.3151 soc_loss: 9.4223 sal_loss: 3.9334 
+2024-11-15 14:39:00,736 - Epoch 185 Test set [recall@10: 0.0303 recall@20: 0.0499 recall@40: 0.0799 ] Test set [ndcg@10: 0.0154 ndcg@20: 0.0204 ndcg@40: 0.0265 ] 
+2024-11-15 14:39:00,736 - Validation score increased.  Copying the best model ...
+2024-11-15 14:39:09,520 - [Epoch 186 / 330] rec_loss: 264.0796 reg_loss: 253.6453 soc_loss: 9.3938 sal_loss: 3.9343 
+2024-11-15 14:39:18,632 - [Epoch 187 / 330] rec_loss: 262.9463 reg_loss: 253.9078 soc_loss: 9.4139 sal_loss: 3.9341 
+2024-11-15 14:39:27,492 - [Epoch 188 / 330] rec_loss: 259.1804 reg_loss: 254.2125 soc_loss: 9.3957 sal_loss: 3.9345 
+2024-11-15 14:39:36,244 - [Epoch 189 / 330] rec_loss: 260.0030 reg_loss: 254.5558 soc_loss: 9.4022 sal_loss: 3.9356 
+2024-11-15 14:39:45,376 - [Epoch 190 / 330] rec_loss: 258.0717 reg_loss: 254.8176 soc_loss: 9.3838 sal_loss: 3.9346 
+2024-11-15 14:39:58,003 - Epoch 190 Test set [recall@10: 0.0303 recall@20: 0.0504 recall@40: 0.0798 ] Test set [ndcg@10: 0.0154 ndcg@20: 0.0205 ndcg@40: 0.0265 ] 
+2024-11-15 14:39:58,004 - Validation score increased.  Copying the best model ...
+2024-11-15 14:40:06,832 - [Epoch 191 / 330] rec_loss: 260.2624 reg_loss: 255.1071 soc_loss: 9.3982 sal_loss: 3.9371 
+2024-11-15 14:40:15,748 - [Epoch 192 / 330] rec_loss: 260.0295 reg_loss: 255.3221 soc_loss: 9.3950 sal_loss: 3.9354 
+2024-11-15 14:40:24,800 - [Epoch 193 / 330] rec_loss: 257.0023 reg_loss: 255.5383 soc_loss: 9.3917 sal_loss: 3.9367 
+2024-11-15 14:40:33,973 - [Epoch 194 / 330] rec_loss: 258.4365 reg_loss: 255.7638 soc_loss: 9.4154 sal_loss: 3.9366 
+2024-11-15 14:40:43,063 - [Epoch 195 / 330] rec_loss: 257.0300 reg_loss: 256.0735 soc_loss: 9.3995 sal_loss: 3.9371 
+2024-11-15 14:40:56,034 - Epoch 195 Test set [recall@10: 0.0306 recall@20: 0.0501 recall@40: 0.0798 ] Test set [ndcg@10: 0.0155 ndcg@20: 0.0205 ndcg@40: 0.0265 ] 
+2024-11-15 14:40:56,035 - Validation score increased.  Copying the best model ...
+2024-11-15 14:41:04,688 - [Epoch 196 / 330] rec_loss: 252.9780 reg_loss: 256.3370 soc_loss: 9.3956 sal_loss: 3.9370 
+2024-11-15 14:41:13,475 - [Epoch 197 / 330] rec_loss: 252.8361 reg_loss: 256.6840 soc_loss: 9.4094 sal_loss: 3.9374 
+2024-11-15 14:41:22,232 - [Epoch 198 / 330] rec_loss: 254.1149 reg_loss: 256.9582 soc_loss: 9.4103 sal_loss: 3.9367 
+2024-11-15 14:41:31,279 - [Epoch 199 / 330] rec_loss: 255.2060 reg_loss: 257.1939 soc_loss: 9.3989 sal_loss: 3.9362 
+2024-11-15 14:41:40,044 - [Epoch 200 / 330] rec_loss: 254.7284 reg_loss: 257.4093 soc_loss: 9.4079 sal_loss: 3.9382 
+2024-11-15 14:41:53,504 - Epoch 200 Test set [recall@10: 0.0308 recall@20: 0.0506 recall@40: 0.0806 ] Test set [ndcg@10: 0.0156 ndcg@20: 0.0206 ndcg@40: 0.0267 ] 
+2024-11-15 14:41:53,504 - Validation score increased.  Copying the best model ...
+2024-11-15 14:42:02,629 - [Epoch 201 / 330] rec_loss: 252.0976 reg_loss: 257.6743 soc_loss: 9.4216 sal_loss: 3.9398 
+2024-11-15 14:42:11,416 - [Epoch 202 / 330] rec_loss: 251.5449 reg_loss: 257.9409 soc_loss: 9.4171 sal_loss: 3.9366 
+2024-11-15 14:42:19,940 - [Epoch 203 / 330] rec_loss: 253.6208 reg_loss: 258.1368 soc_loss: 9.4134 sal_loss: 3.9386 
+2024-11-15 14:42:28,580 - [Epoch 204 / 330] rec_loss: 250.7137 reg_loss: 258.3654 soc_loss: 9.4085 sal_loss: 3.9367 
+2024-11-15 14:42:37,508 - [Epoch 205 / 330] rec_loss: 251.0368 reg_loss: 258.6055 soc_loss: 9.4230 sal_loss: 3.9397 
+2024-11-15 14:42:50,391 - Epoch 205 Test set [recall@10: 0.0309 recall@20: 0.0508 recall@40: 0.0804 ] Test set [ndcg@10: 0.0156 ndcg@20: 0.0207 ndcg@40: 0.0267 ] 
+2024-11-15 14:42:50,392 - Validation score increased.  Copying the best model ...
+2024-11-15 14:42:59,324 - [Epoch 206 / 330] rec_loss: 250.0049 reg_loss: 258.8595 soc_loss: 9.3884 sal_loss: 3.9392 
+2024-11-15 14:43:08,056 - [Epoch 207 / 330] rec_loss: 249.8354 reg_loss: 259.0841 soc_loss: 9.4077 sal_loss: 3.9378 
+2024-11-15 14:43:17,288 - [Epoch 208 / 330] rec_loss: 253.7593 reg_loss: 259.2664 soc_loss: 9.4172 sal_loss: 3.9391 
+2024-11-15 14:43:26,392 - [Epoch 209 / 330] rec_loss: 252.6543 reg_loss: 259.3696 soc_loss: 9.4054 sal_loss: 3.9413 
+2024-11-15 14:43:35,376 - [Epoch 210 / 330] rec_loss: 248.8750 reg_loss: 259.5817 soc_loss: 9.4197 sal_loss: 3.9419 
+2024-11-15 14:43:48,521 - Epoch 210 Test set [recall@10: 0.0307 recall@20: 0.0510 recall@40: 0.0814 ] Test set [ndcg@10: 0.0156 ndcg@20: 0.0207 ndcg@40: 0.0269 ] 
+2024-11-15 14:43:48,521 - Early stop counter: 1 out of 4
+2024-11-15 14:43:57,264 - [Epoch 211 / 330] rec_loss: 247.4205 reg_loss: 259.8403 soc_loss: 9.4111 sal_loss: 3.9379 
+2024-11-15 14:44:05,884 - [Epoch 212 / 330] rec_loss: 248.9314 reg_loss: 260.0674 soc_loss: 9.4162 sal_loss: 3.9419 
+2024-11-15 14:44:15,108 - [Epoch 213 / 330] rec_loss: 246.4028 reg_loss: 260.2773 soc_loss: 9.4219 sal_loss: 3.9390 
+2024-11-15 14:44:24,243 - [Epoch 214 / 330] rec_loss: 247.5069 reg_loss: 260.5137 soc_loss: 9.4265 sal_loss: 3.9415 
+2024-11-15 14:44:33,652 - [Epoch 215 / 330] rec_loss: 247.4646 reg_loss: 260.7063 soc_loss: 9.4485 sal_loss: 3.9403 
+2024-11-15 14:44:46,473 - Epoch 215 Test set [recall@10: 0.0311 recall@20: 0.0512 recall@40: 0.0814 ] Test set [ndcg@10: 0.0157 ndcg@20: 0.0207 ndcg@40: 0.0269 ] 
+2024-11-15 14:44:46,474 - Validation score increased.  Copying the best model ...
+2024-11-15 14:44:55,340 - [Epoch 216 / 330] rec_loss: 246.4613 reg_loss: 260.9082 soc_loss: 9.4303 sal_loss: 3.9428 
+2024-11-15 14:45:04,642 - [Epoch 217 / 330] rec_loss: 249.4616 reg_loss: 261.0843 soc_loss: 9.4266 sal_loss: 3.9393 
+2024-11-15 14:45:13,604 - [Epoch 218 / 330] rec_loss: 247.1196 reg_loss: 261.2544 soc_loss: 9.4380 sal_loss: 3.9421 
+2024-11-15 14:45:22,612 - [Epoch 219 / 330] rec_loss: 247.7217 reg_loss: 261.4377 soc_loss: 9.4364 sal_loss: 3.9412 
+2024-11-15 14:45:31,440 - [Epoch 220 / 330] rec_loss: 247.0120 reg_loss: 261.6069 soc_loss: 9.4111 sal_loss: 3.9427 
+2024-11-15 14:45:44,718 - Epoch 220 Test set [recall@10: 0.0313 recall@20: 0.0509 recall@40: 0.0822 ] Test set [ndcg@10: 0.0158 ndcg@20: 0.0208 ndcg@40: 0.0271 ] 
+2024-11-15 14:45:44,718 - Validation score increased.  Copying the best model ...
+2024-11-15 14:45:53,539 - [Epoch 221 / 330] rec_loss: 244.6439 reg_loss: 261.8117 soc_loss: 9.4285 sal_loss: 3.9436 
+2024-11-15 14:46:01,989 - [Epoch 222 / 330] rec_loss: 242.8053 reg_loss: 262.0223 soc_loss: 9.4435 sal_loss: 3.9412 
+2024-11-15 14:46:10,905 - [Epoch 223 / 330] rec_loss: 242.2559 reg_loss: 262.2966 soc_loss: 9.4434 sal_loss: 3.9438 
+2024-11-15 14:46:20,364 - [Epoch 224 / 330] rec_loss: 243.5161 reg_loss: 262.5046 soc_loss: 9.4274 sal_loss: 3.9415 
+2024-11-15 14:46:29,820 - [Epoch 225 / 330] rec_loss: 243.2003 reg_loss: 262.7121 soc_loss: 9.4684 sal_loss: 3.9407 
+2024-11-15 14:46:42,268 - Epoch 225 Test set [recall@10: 0.0315 recall@20: 0.0514 recall@40: 0.0821 ] Test set [ndcg@10: 0.0159 ndcg@20: 0.0209 ndcg@40: 0.0271 ] 
+2024-11-15 14:46:42,269 - Validation score increased.  Copying the best model ...
+2024-11-15 14:46:51,216 - [Epoch 226 / 330] rec_loss: 242.2586 reg_loss: 262.9434 soc_loss: 9.4524 sal_loss: 3.9439 
+2024-11-15 14:47:00,042 - [Epoch 227 / 330] rec_loss: 243.1375 reg_loss: 263.1290 soc_loss: 9.4268 sal_loss: 3.9441 
+2024-11-15 14:47:08,656 - [Epoch 228 / 330] rec_loss: 242.6787 reg_loss: 263.3022 soc_loss: 9.4463 sal_loss: 3.9457 
+2024-11-15 14:47:17,688 - [Epoch 229 / 330] rec_loss: 239.4231 reg_loss: 263.4888 soc_loss: 9.4366 sal_loss: 3.9409 
+2024-11-15 14:47:27,040 - [Epoch 230 / 330] rec_loss: 243.1174 reg_loss: 263.7033 soc_loss: 9.4359 sal_loss: 3.9437 
+2024-11-15 14:47:39,825 - Epoch 230 Test set [recall@10: 0.0319 recall@20: 0.0515 recall@40: 0.0821 ] Test set [ndcg@10: 0.0160 ndcg@20: 0.0210 ndcg@40: 0.0272 ] 
+2024-11-15 14:47:39,826 - Validation score increased.  Copying the best model ...
+2024-11-15 14:47:48,332 - [Epoch 231 / 330] rec_loss: 239.9672 reg_loss: 263.8610 soc_loss: 9.4371 sal_loss: 3.9461 
+2024-11-15 14:47:57,612 - [Epoch 232 / 330] rec_loss: 242.1606 reg_loss: 264.0137 soc_loss: 9.4586 sal_loss: 3.9422 
+2024-11-15 14:48:06,448 - [Epoch 233 / 330] rec_loss: 240.6281 reg_loss: 264.1797 soc_loss: 9.4353 sal_loss: 3.9440 
+2024-11-15 14:48:15,472 - [Epoch 234 / 330] rec_loss: 240.4810 reg_loss: 264.3798 soc_loss: 9.4284 sal_loss: 3.9434 
+2024-11-15 14:48:24,324 - [Epoch 235 / 330] rec_loss: 238.7180 reg_loss: 264.5430 soc_loss: 9.4718 sal_loss: 3.9455 
+2024-11-15 14:48:37,387 - Epoch 235 Test set [recall@10: 0.0319 recall@20: 0.0514 recall@40: 0.0819 ] Test set [ndcg@10: 0.0161 ndcg@20: 0.0210 ndcg@40: 0.0272 ] 
+2024-11-15 14:48:37,388 - Validation score increased.  Copying the best model ...
+2024-11-15 14:48:46,342 - [Epoch 236 / 330] rec_loss: 236.7304 reg_loss: 264.7782 soc_loss: 9.4302 sal_loss: 3.9469 
+2024-11-15 14:48:55,184 - [Epoch 237 / 330] rec_loss: 238.4081 reg_loss: 264.9773 soc_loss: 9.4255 sal_loss: 3.9430 
+2024-11-15 14:49:03,984 - [Epoch 238 / 330] rec_loss: 239.1974 reg_loss: 265.1517 soc_loss: 9.4366 sal_loss: 3.9455 
+2024-11-15 14:49:12,960 - [Epoch 239 / 330] rec_loss: 235.4323 reg_loss: 265.2818 soc_loss: 9.4372 sal_loss: 3.9461 
+2024-11-15 14:49:21,675 - [Epoch 240 / 330] rec_loss: 236.8520 reg_loss: 265.4585 soc_loss: 9.4517 sal_loss: 3.9468 
+2024-11-15 14:49:35,068 - Epoch 240 Test set [recall@10: 0.0319 recall@20: 0.0515 recall@40: 0.0821 ] Test set [ndcg@10: 0.0161 ndcg@20: 0.0210 ndcg@40: 0.0272 ] 
+2024-11-15 14:49:35,068 - Early stop counter: 1 out of 4
+2024-11-15 14:49:43,932 - [Epoch 241 / 330] rec_loss: 234.5304 reg_loss: 265.6384 soc_loss: 9.4526 sal_loss: 3.9459 
+2024-11-15 14:49:52,560 - [Epoch 242 / 330] rec_loss: 236.6227 reg_loss: 265.8433 soc_loss: 9.4270 sal_loss: 3.9444 
+2024-11-15 14:50:01,148 - [Epoch 243 / 330] rec_loss: 234.4321 reg_loss: 265.9976 soc_loss: 9.4536 sal_loss: 3.9441 
+2024-11-15 14:50:10,192 - [Epoch 244 / 330] rec_loss: 234.4351 reg_loss: 266.1433 soc_loss: 9.4428 sal_loss: 3.9464 
+2024-11-15 14:50:19,460 - [Epoch 245 / 330] rec_loss: 238.7556 reg_loss: 266.2814 soc_loss: 9.4570 sal_loss: 3.9467 
+2024-11-15 14:50:32,104 - Epoch 245 Test set [recall@10: 0.0321 recall@20: 0.0515 recall@40: 0.0823 ] Test set [ndcg@10: 0.0162 ndcg@20: 0.0211 ndcg@40: 0.0273 ] 
+2024-11-15 14:50:32,105 - Validation score increased.  Copying the best model ...
+2024-11-15 14:50:41,412 - [Epoch 246 / 330] rec_loss: 234.9695 reg_loss: 266.3829 soc_loss: 9.4370 sal_loss: 3.9478 
+2024-11-15 14:50:50,458 - [Epoch 247 / 330] rec_loss: 238.2729 reg_loss: 266.5204 soc_loss: 9.4166 sal_loss: 3.9481 
+2024-11-15 14:50:59,572 - [Epoch 248 / 330] rec_loss: 234.9934 reg_loss: 266.6510 soc_loss: 9.4486 sal_loss: 3.9468 
+2024-11-15 14:51:08,652 - [Epoch 249 / 330] rec_loss: 232.9099 reg_loss: 266.7992 soc_loss: 9.4568 sal_loss: 3.9460 
+2024-11-15 14:51:17,876 - [Epoch 250 / 330] rec_loss: 235.0277 reg_loss: 266.9631 soc_loss: 9.4552 sal_loss: 3.9480 
+2024-11-15 14:51:30,808 - Epoch 250 Test set [recall@10: 0.0323 recall@20: 0.0519 recall@40: 0.0826 ] Test set [ndcg@10: 0.0162 ndcg@20: 0.0212 ndcg@40: 0.0274 ] 
+2024-11-15 14:51:30,809 - Validation score increased.  Copying the best model ...
+2024-11-15 14:51:39,776 - [Epoch 251 / 330] rec_loss: 232.6081 reg_loss: 267.1436 soc_loss: 9.4403 sal_loss: 3.9507 
+2024-11-15 14:51:48,269 - [Epoch 252 / 330] rec_loss: 233.5882 reg_loss: 267.3026 soc_loss: 9.4392 sal_loss: 3.9482 
+2024-11-15 14:51:56,992 - [Epoch 253 / 330] rec_loss: 234.7452 reg_loss: 267.4307 soc_loss: 9.4237 sal_loss: 3.9474 
+2024-11-15 14:52:05,652 - [Epoch 254 / 330] rec_loss: 234.2118 reg_loss: 267.5156 soc_loss: 9.4392 sal_loss: 3.9477 
+2024-11-15 14:52:14,371 - [Epoch 255 / 330] rec_loss: 233.0529 reg_loss: 267.6289 soc_loss: 9.4556 sal_loss: 3.9481 
+2024-11-15 14:52:27,587 - Epoch 255 Test set [recall@10: 0.0322 recall@20: 0.0519 recall@40: 0.0830 ] Test set [ndcg@10: 0.0162 ndcg@20: 0.0212 ndcg@40: 0.0275 ] 
+2024-11-15 14:52:27,587 - Early stop counter: 1 out of 4
+2024-11-15 14:52:36,785 - [Epoch 256 / 330] rec_loss: 231.9183 reg_loss: 267.7980 soc_loss: 9.4637 sal_loss: 3.9454 
+2024-11-15 14:52:45,924 - [Epoch 257 / 330] rec_loss: 230.8846 reg_loss: 267.9712 soc_loss: 9.4492 sal_loss: 3.9476 
+2024-11-15 14:52:55,260 - [Epoch 258 / 330] rec_loss: 230.2203 reg_loss: 268.0966 soc_loss: 9.4390 sal_loss: 3.9484 
+2024-11-15 14:53:04,188 - [Epoch 259 / 330] rec_loss: 229.9541 reg_loss: 268.2718 soc_loss: 9.4478 sal_loss: 3.9471 
+2024-11-15 14:53:13,692 - [Epoch 260 / 330] rec_loss: 235.1510 reg_loss: 268.3455 soc_loss: 9.4430 sal_loss: 3.9501 
+2024-11-15 14:53:27,128 - Epoch 260 Test set [recall@10: 0.0324 recall@20: 0.0517 recall@40: 0.0830 ] Test set [ndcg@10: 0.0163 ndcg@20: 0.0212 ndcg@40: 0.0276 ] 
+2024-11-15 14:53:27,129 - Validation score increased.  Copying the best model ...
+2024-11-15 14:53:35,588 - [Epoch 261 / 330] rec_loss: 229.6836 reg_loss: 268.4764 soc_loss: 9.4585 sal_loss: 3.9493 
+2024-11-15 14:53:44,152 - [Epoch 262 / 330] rec_loss: 227.9144 reg_loss: 268.6671 soc_loss: 9.4376 sal_loss: 3.9487 
+2024-11-15 14:53:52,567 - [Epoch 263 / 330] rec_loss: 231.4912 reg_loss: 268.8257 soc_loss: 9.4522 sal_loss: 3.9470 
+2024-11-15 14:54:01,197 - [Epoch 264 / 330] rec_loss: 229.3308 reg_loss: 268.9814 soc_loss: 9.4721 sal_loss: 3.9494 
+2024-11-15 14:54:10,481 - [Epoch 265 / 330] rec_loss: 229.4729 reg_loss: 269.1023 soc_loss: 9.4442 sal_loss: 3.9490 
+2024-11-15 14:54:23,417 - Epoch 265 Test set [recall@10: 0.0326 recall@20: 0.0518 recall@40: 0.0833 ] Test set [ndcg@10: 0.0164 ndcg@20: 0.0212 ndcg@40: 0.0276 ] 
+2024-11-15 14:54:23,418 - Validation score increased.  Copying the best model ...
+2024-11-15 14:54:32,524 - [Epoch 266 / 330] rec_loss: 230.1527 reg_loss: 269.2118 soc_loss: 9.4551 sal_loss: 3.9470 
+2024-11-15 14:54:41,356 - [Epoch 267 / 330] rec_loss: 229.0814 reg_loss: 269.3103 soc_loss: 9.4622 sal_loss: 3.9480 
+2024-11-15 14:54:50,299 - [Epoch 268 / 330] rec_loss: 232.4124 reg_loss: 269.3657 soc_loss: 9.4592 sal_loss: 3.9490 
+2024-11-15 14:54:59,169 - [Epoch 269 / 330] rec_loss: 228.0150 reg_loss: 269.4279 soc_loss: 9.4569 sal_loss: 3.9502 
+2024-11-15 14:55:08,312 - [Epoch 270 / 330] rec_loss: 228.4061 reg_loss: 269.5681 soc_loss: 9.4658 sal_loss: 3.9493 
+2024-11-15 14:55:21,831 - Epoch 270 Test set [recall@10: 0.0325 recall@20: 0.0522 recall@40: 0.0832 ] Test set [ndcg@10: 0.0164 ndcg@20: 0.0213 ndcg@40: 0.0277 ] 
+2024-11-15 14:55:21,832 - Early stop counter: 1 out of 4
+2024-11-15 14:55:30,592 - [Epoch 271 / 330] rec_loss: 227.0187 reg_loss: 269.7375 soc_loss: 9.4584 sal_loss: 3.9482 
+2024-11-15 14:55:39,188 - [Epoch 272 / 330] rec_loss: 226.4562 reg_loss: 269.9112 soc_loss: 9.4909 sal_loss: 3.9484 
+2024-11-15 14:55:48,483 - [Epoch 273 / 330] rec_loss: 230.2604 reg_loss: 270.0287 soc_loss: 9.4885 sal_loss: 3.9501 
+2024-11-15 14:55:57,400 - [Epoch 274 / 330] rec_loss: 225.2631 reg_loss: 270.1693 soc_loss: 9.4907 sal_loss: 3.9491 
+2024-11-15 14:56:06,668 - [Epoch 275 / 330] rec_loss: 227.8204 reg_loss: 270.3541 soc_loss: 9.4601 sal_loss: 3.9501 
+2024-11-15 14:56:20,388 - Epoch 275 Test set [recall@10: 0.0324 recall@20: 0.0523 recall@40: 0.0836 ] Test set [ndcg@10: 0.0164 ndcg@20: 0.0214 ndcg@40: 0.0277 ] 
+2024-11-15 14:56:20,389 - Early stop counter: 2 out of 4
+2024-11-15 14:56:29,064 - [Epoch 276 / 330] rec_loss: 226.4595 reg_loss: 270.4641 soc_loss: 9.5026 sal_loss: 3.9485 
+2024-11-15 14:56:37,643 - [Epoch 277 / 330] rec_loss: 225.5363 reg_loss: 270.6110 soc_loss: 9.4598 sal_loss: 3.9516 
+2024-11-15 14:56:46,264 - [Epoch 278 / 330] rec_loss: 226.3936 reg_loss: 270.7305 soc_loss: 9.4615 sal_loss: 3.9524 
+2024-11-15 14:56:55,356 - [Epoch 279 / 330] rec_loss: 226.5524 reg_loss: 270.8951 soc_loss: 9.4646 sal_loss: 3.9517 
+2024-11-15 14:57:04,756 - [Epoch 280 / 330] rec_loss: 229.8354 reg_loss: 270.9561 soc_loss: 9.4785 sal_loss: 3.9499 
+2024-11-15 14:57:18,159 - Epoch 280 Test set [recall@10: 0.0326 recall@20: 0.0522 recall@40: 0.0834 ] Test set [ndcg@10: 0.0164 ndcg@20: 0.0214 ndcg@40: 0.0277 ] 
+2024-11-15 14:57:18,159 - Early stop counter: 3 out of 4
+2024-11-15 14:57:26,856 - [Epoch 281 / 330] rec_loss: 225.5636 reg_loss: 271.0423 soc_loss: 9.5006 sal_loss: 3.9507 
+2024-11-15 14:57:35,540 - [Epoch 282 / 330] rec_loss: 223.8948 reg_loss: 271.1955 soc_loss: 9.4690 sal_loss: 3.9506 
+2024-11-15 14:57:44,816 - [Epoch 283 / 330] rec_loss: 225.9811 reg_loss: 271.3700 soc_loss: 9.4798 sal_loss: 3.9505 
+2024-11-15 14:57:53,812 - [Epoch 284 / 330] rec_loss: 227.8904 reg_loss: 271.4554 soc_loss: 9.4749 sal_loss: 3.9510 
+2024-11-15 14:58:02,803 - [Epoch 285 / 330] rec_loss: 224.2612 reg_loss: 271.5361 soc_loss: 9.4774 sal_loss: 3.9526 
+2024-11-15 14:58:16,797 - Epoch 285 Test set [recall@10: 0.0328 recall@20: 0.0522 recall@40: 0.0839 ] Test set [ndcg@10: 0.0165 ndcg@20: 0.0214 ndcg@40: 0.0278 ] 
+2024-11-15 14:58:16,798 - Validation score increased.  Copying the best model ...
+2024-11-15 14:58:25,176 - [Epoch 286 / 330] rec_loss: 224.3568 reg_loss: 271.6700 soc_loss: 9.4822 sal_loss: 3.9531 
+2024-11-15 14:58:33,720 - [Epoch 287 / 330] rec_loss: 226.5255 reg_loss: 271.8236 soc_loss: 9.4996 sal_loss: 3.9511 
+2024-11-15 14:58:42,469 - [Epoch 288 / 330] rec_loss: 223.4036 reg_loss: 271.8983 soc_loss: 9.4908 sal_loss: 3.9508 
+2024-11-15 14:58:51,784 - [Epoch 289 / 330] rec_loss: 225.3317 reg_loss: 272.0473 soc_loss: 9.4864 sal_loss: 3.9528 
+2024-11-15 14:59:00,792 - [Epoch 290 / 330] rec_loss: 222.4579 reg_loss: 272.1692 soc_loss: 9.4859 sal_loss: 3.9529 
+2024-11-15 14:59:14,014 - Epoch 290 Test set [recall@10: 0.0325 recall@20: 0.0526 recall@40: 0.0843 ] Test set [ndcg@10: 0.0164 ndcg@20: 0.0215 ndcg@40: 0.0279 ] 
+2024-11-15 14:59:14,014 - Early stop counter: 1 out of 4
+2024-11-15 14:59:23,164 - [Epoch 291 / 330] rec_loss: 224.1731 reg_loss: 272.3304 soc_loss: 9.4823 sal_loss: 3.9501 
+2024-11-15 14:59:31,700 - [Epoch 292 / 330] rec_loss: 223.3788 reg_loss: 272.4612 soc_loss: 9.4699 sal_loss: 3.9524 
+2024-11-15 14:59:40,348 - [Epoch 293 / 330] rec_loss: 224.0857 reg_loss: 272.5392 soc_loss: 9.4780 sal_loss: 3.9523 
+2024-11-15 14:59:49,645 - [Epoch 294 / 330] rec_loss: 222.4117 reg_loss: 272.5962 soc_loss: 9.4612 sal_loss: 3.9531 
+2024-11-15 14:59:58,616 - [Epoch 295 / 330] rec_loss: 223.9154 reg_loss: 272.7335 soc_loss: 9.4693 sal_loss: 3.9507 
+2024-11-15 15:00:11,325 - Epoch 295 Test set [recall@10: 0.0327 recall@20: 0.0527 recall@40: 0.0842 ] Test set [ndcg@10: 0.0165 ndcg@20: 0.0215 ndcg@40: 0.0279 ] 
+2024-11-15 15:00:11,325 - Early stop counter: 2 out of 4
+2024-11-15 15:00:19,639 - [Epoch 296 / 330] rec_loss: 221.0553 reg_loss: 272.8438 soc_loss: 9.5091 sal_loss: 3.9512 
+2024-11-15 15:00:27,963 - [Epoch 297 / 330] rec_loss: 221.0960 reg_loss: 272.9483 soc_loss: 9.4998 sal_loss: 3.9532 
+2024-11-15 15:00:36,195 - [Epoch 298 / 330] rec_loss: 221.7761 reg_loss: 273.0658 soc_loss: 9.4662 sal_loss: 3.9516 
+2024-11-15 15:00:44,695 - [Epoch 299 / 330] rec_loss: 224.8383 reg_loss: 273.1655 soc_loss: 9.4837 sal_loss: 3.9527 
+2024-11-15 15:00:53,648 - [Epoch 300 / 330] rec_loss: 219.9062 reg_loss: 273.2574 soc_loss: 9.4748 sal_loss: 3.9530 
+2024-11-15 15:01:06,730 - Epoch 300 Test set [recall@10: 0.0330 recall@20: 0.0529 recall@40: 0.0840 ] Test set [ndcg@10: 0.0165 ndcg@20: 0.0215 ndcg@40: 0.0278 ] 
+2024-11-15 15:01:06,731 - Validation score increased.  Copying the best model ...
+2024-11-15 15:01:15,400 - [Epoch 301 / 330] rec_loss: 223.4204 reg_loss: 273.3680 soc_loss: 9.4838 sal_loss: 3.9521 
+2024-11-15 15:01:24,348 - [Epoch 302 / 330] rec_loss: 221.4761 reg_loss: 273.4450 soc_loss: 9.4699 sal_loss: 3.9529 
+2024-11-15 15:01:33,220 - [Epoch 303 / 330] rec_loss: 219.5986 reg_loss: 273.5740 soc_loss: 9.5086 sal_loss: 3.9547 
+2024-11-15 15:01:42,632 - [Epoch 304 / 330] rec_loss: 219.9572 reg_loss: 273.6726 soc_loss: 9.5183 sal_loss: 3.9533 
+2024-11-15 15:01:51,295 - [Epoch 305 / 330] rec_loss: 223.8296 reg_loss: 273.7450 soc_loss: 9.4718 sal_loss: 3.9527 
+2024-11-15 15:02:04,438 - Epoch 305 Test set [recall@10: 0.0331 recall@20: 0.0527 recall@40: 0.0842 ] Test set [ndcg@10: 0.0165 ndcg@20: 0.0214 ndcg@40: 0.0278 ] 
+2024-11-15 15:02:04,439 - Validation score increased.  Copying the best model ...
+2024-11-15 15:02:13,020 - [Epoch 306 / 330] rec_loss: 219.1765 reg_loss: 273.8175 soc_loss: 9.4930 sal_loss: 3.9516 
+2024-11-15 15:02:21,864 - [Epoch 307 / 330] rec_loss: 221.8347 reg_loss: 273.9152 soc_loss: 9.4786 sal_loss: 3.9544 
+2024-11-15 15:02:30,399 - [Epoch 308 / 330] rec_loss: 217.6967 reg_loss: 274.0115 soc_loss: 9.4898 sal_loss: 3.9528 
+2024-11-15 15:02:39,872 - [Epoch 309 / 330] rec_loss: 217.1359 reg_loss: 274.1817 soc_loss: 9.4871 sal_loss: 3.9527 
+2024-11-15 15:02:52,824 - [Epoch 310 / 330] rec_loss: 218.0359 reg_loss: 274.3325 soc_loss: 9.4791 sal_loss: 3.9537 
+2024-11-15 15:03:06,253 - Epoch 310 Test set [recall@10: 0.0329 recall@20: 0.0529 recall@40: 0.0843 ] Test set [ndcg@10: 0.0166 ndcg@20: 0.0216 ndcg@40: 0.0280 ] 
+2024-11-15 15:03:06,253 - Early stop counter: 1 out of 4
+2024-11-15 15:03:15,488 - [Epoch 311 / 330] rec_loss: 219.2595 reg_loss: 274.4058 soc_loss: 9.4933 sal_loss: 3.9530 
+2024-11-15 15:03:24,540 - [Epoch 312 / 330] rec_loss: 220.9431 reg_loss: 274.4760 soc_loss: 9.4939 sal_loss: 3.9552 
+2024-11-15 15:03:33,896 - [Epoch 313 / 330] rec_loss: 219.7328 reg_loss: 274.5300 soc_loss: 9.4878 sal_loss: 3.9539 
+2024-11-15 15:03:42,607 - [Epoch 314 / 330] rec_loss: 218.3014 reg_loss: 274.6189 soc_loss: 9.4993 sal_loss: 3.9526 
+2024-11-15 15:03:51,440 - [Epoch 315 / 330] rec_loss: 218.6846 reg_loss: 274.6624 soc_loss: 9.4902 sal_loss: 3.9531 
+2024-11-15 15:04:04,743 - Epoch 315 Test set [recall@10: 0.0328 recall@20: 0.0526 recall@40: 0.0845 ] Test set [ndcg@10: 0.0165 ndcg@20: 0.0215 ndcg@40: 0.0280 ] 
+2024-11-15 15:04:04,743 - Early stop counter: 2 out of 4
+2024-11-15 15:04:13,184 - [Epoch 316 / 330] rec_loss: 216.5964 reg_loss: 274.7739 soc_loss: 9.5128 sal_loss: 3.9537 
+2024-11-15 15:04:21,983 - [Epoch 317 / 330] rec_loss: 218.0133 reg_loss: 274.8652 soc_loss: 9.4788 sal_loss: 3.9544 
+2024-11-15 15:04:30,448 - [Epoch 318 / 330] rec_loss: 219.0106 reg_loss: 274.9580 soc_loss: 9.4946 sal_loss: 3.9539 
+2024-11-15 15:04:39,055 - [Epoch 319 / 330] rec_loss: 219.6376 reg_loss: 275.0399 soc_loss: 9.5076 sal_loss: 3.9541 
+2024-11-15 15:04:48,320 - [Epoch 320 / 330] rec_loss: 218.7589 reg_loss: 275.0850 soc_loss: 9.5278 sal_loss: 3.9558 
+2024-11-15 15:05:01,083 - Epoch 320 Test set [recall@10: 0.0329 recall@20: 0.0528 recall@40: 0.0851 ] Test set [ndcg@10: 0.0166 ndcg@20: 0.0216 ndcg@40: 0.0281 ] 
+2024-11-15 15:05:01,083 - Early stop counter: 3 out of 4
+2024-11-15 15:05:10,032 - [Epoch 321 / 330] rec_loss: 214.2473 reg_loss: 275.2259 soc_loss: 9.5063 sal_loss: 3.9537 
+2024-11-15 15:05:18,776 - [Epoch 322 / 330] rec_loss: 216.2934 reg_loss: 275.3823 soc_loss: 9.5200 sal_loss: 3.9553 
+2024-11-15 15:05:27,352 - [Epoch 323 / 330] rec_loss: 217.5962 reg_loss: 275.4790 soc_loss: 9.5057 sal_loss: 3.9543 
+2024-11-15 15:05:36,220 - [Epoch 324 / 330] rec_loss: 213.4040 reg_loss: 275.5863 soc_loss: 9.4978 sal_loss: 3.9549 
+2024-11-15 15:05:45,470 - [Epoch 325 / 330] rec_loss: 217.2214 reg_loss: 275.7222 soc_loss: 9.4989 sal_loss: 3.9562 
+2024-11-15 15:05:58,657 - Epoch 325 Test set [recall@10: 0.0331 recall@20: 0.0532 recall@40: 0.0850 ] Test set [ndcg@10: 0.0167 ndcg@20: 0.0217 ndcg@40: 0.0282 ] 
+2024-11-15 15:05:58,658 - Validation score increased.  Copying the best model ...
+2024-11-15 15:06:07,472 - [Epoch 326 / 330] rec_loss: 218.0794 reg_loss: 275.7853 soc_loss: 9.5100 sal_loss: 3.9539 
+2024-11-15 15:06:16,128 - [Epoch 327 / 330] rec_loss: 217.1170 reg_loss: 275.8301 soc_loss: 9.5040 sal_loss: 3.9555 
+2024-11-15 15:06:24,776 - [Epoch 328 / 330] rec_loss: 214.3141 reg_loss: 275.9339 soc_loss: 9.5280 sal_loss: 3.9550 
+2024-11-15 15:06:34,192 - [Epoch 329 / 330] rec_loss: 214.2473 reg_loss: 276.0649 soc_loss: 9.5117 sal_loss: 3.9561 
+2024-11-15 15:06:34,192 - Best Epoch 325
+2024-11-15 15:06:47,057 - Test set [recall@10: 0.0331 recall@20: 0.0532 recall@40: 0.0850 ] Test set [ndcg@10: 0.0167 ndcg@20: 0.0217 ndcg@40: 0.0282 ] 
+2024-11-15 15:07:00,627 - Test set [recall@10: 0.0331 recall@20: 0.0532 recall@40: 0.0850 ] Test set [ndcg@10: 0.0167 ndcg@20: 0.0217 ndcg@40: 0.0282 ] 
+2024-11-15 15:07:00,653 - Save model parameters to ./checkpoint/dsl/dsl-1731683220.pth
+2024-11-15 15:07:14,334 - Test set [recall@10: 0.0331 recall@20: 0.0532 recall@40: 0.0850 ] Test set [ndcg@10: 0.0167 ndcg@20: 0.0217 ndcg@40: 0.0282 ] 
