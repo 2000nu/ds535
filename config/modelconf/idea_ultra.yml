@@ -1,0 +1,44 @@
+optimizer:
+  name: adam
+  lr: 1.0e-3
+  weight_decay: 0
+
+train:
+  epoch: 30
+  batch_size: 2000
+  save_model: false
+  loss: pairwise  # Using BPR loss
+  test_step: 1  # Evaluate every {test_step} epochs
+  reproducible: true
+  seed: 2023
+  tensorboard: true
+
+test:
+  metrics: [recall, ndcg, precision, mrr]  # Choose evaluation metrics
+  k: [10, 20, 40]  # Top-k recommendations
+  batch_size: 512  # Number of users per batch during validation
+
+data:
+  type: social  # Choose from {general_cf, multi_behavior, sequential, social}
+  name: yelp  # Dataset name
+
+model:
+  name: idea_ultragcn 
+  embedding_size: 64
+  ii_neighbor_num: 10
+  w1: 1e-7
+  w2: 1
+  w3: 1e-7
+  w4: 1
+  negative_num: 1000
+  negative_weight: 1000
+  gamma: 1e-4
+  lambda: 5e-4
+
+tune:
+  enable: true  # Enable hyperparameter tuning
+  hyperparameters: [embedding_size, reg_weight, lambda_reg, similarity_threshold]
+  embedding_size: [32, 64, 128]
+  reg_weight: [1.0e-2, 1.0e-3, 1.0e-4]
+  lambda_reg: [1.0e-2, 1.0e-3, 1.0e-4]
+  similarity_threshold: [0.3, 0.5, 0.7]

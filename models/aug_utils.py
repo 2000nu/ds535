@@ -28,7 +28,7 @@ class EdgeDrop(nn.Module):
         mask = (t.rand(edgeNum) + keep_rate).floor().type(t.bool)
         newVals = vals[mask] / (keep_rate if self.resize_val else 1.0)
         newIdxs = idxs[:, mask]
-        return t.sparse.FloatTensor(newIdxs, newVals, adj.shape)
+        return t.sparse_coo_tensor(newIdxs, newVals, adj.shape)
 
 class NodeDrop(nn.Module):
     """ Drop nodes in a graph.
