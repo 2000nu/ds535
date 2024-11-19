@@ -27,10 +27,10 @@ data:
 
 model:
   name: baseline_lightgcn # case-insensitive
-  keep_rate: 0.5
+  keep_rate: 1
   layer_num: 2
   reg_weight: 1.0e-8
-  embedding_size: 32
+  embedding_size: 64
 
 tune:
   enable: false # Whether to enable grid search to search for optimal hyperparameters
