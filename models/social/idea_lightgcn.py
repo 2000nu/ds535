@@ -24,7 +24,6 @@ class IDEA_LIGHTGCN(BaseModel):
 
         self.layer_num = configs['model']['layer_num']
         self.reg_weight = configs['model']['reg_weight']
-        self.keep_rate = configs['model']['keep_rate']
         
 
         self.user_embeds = nn.Parameter(init(t.empty(self.user_num, self.embedding_size)))
@@ -109,14 +108,13 @@ class IDEA_LIGHTGCN(BaseModel):
         adj_values = adj._values()
 
         # User-Item Interaction Matrix의 row index는 user, col index는 item에 해당
-        # Item index를 shift하여 user 다음에 위치하도록 함
         adj_row = adj_indices[0, :]
-        adj_col = adj_indices[1, :] + num_users  # item index shift
+        adj_col = adj_indices[1, :] 
 
         # Social Graph와 User-Item Graph의 indices 및 values 결합
-        combined_row = t.cat([trust_indices[0, :], adj_row, adj_col])
-        combined_col = t.cat([trust_indices[1, :], adj_col, adj_row])
-        combined_values = t.cat([trust_values, adj_values, adj_values])
+        combined_row = t.cat([trust_indices[0, :], adj_row])
+        combined_col = t.cat([trust_indices[1, :], adj_col])
+        combined_values = t.cat([trust_values, adj_values])
 
         # (num_users + num_items, num_users + num_items) 크기의 sparse matrix 생성
         combined_size = (num_users + num_items, num_users + num_items)
@@ -151,13 +149,14 @@ class IDEA_LIGHTGCN(BaseModel):
         user_cosine_sim = t.matmul(user_embeds, user_embeds.T)
         user_norm_sim = (1 + user_cosine_sim) / 2
         trust_influence_mat = trust_mat * user_norm_sim
+        
         return trust_influence_mat
     ######################################################
     
     ######################################################
     def _normalize_trust_matrix(self, trust_mat):
         """
-        TODO: Sparse trust graph를 대칭 정규화.
+        TODO(HYEOKTAE-nim): Sparse trust graph를 대칭 정규화.
         Args:
             trust_mat (torch.sparse.FloatTensor): Trust graph matrix (sparse).
 
@@ -193,10 +192,10 @@ class IDEA_LIGHTGCN(BaseModel):
         return combined_adj
     ######################################################
     
-    def forward(self, keep_rate):
+    def forward(self):
         if not self.is_training and self.final_embeds is not None:
             return self.final_embeds[:self.user_num], self.final_embeds[self.user_num:]
-        embeds = t.concat([self.user_embeds, self.item_embeds], axis=0).to(self.device)
+        embeds = t.concat([self.user_embeds, self.item_embeds], axis=0)
         embeds_list = [embeds]
         
         ######################################################
@@ -213,7 +212,7 @@ class IDEA_LIGHTGCN(BaseModel):
     
     def cal_loss(self, batch_data):
         self.is_training = True
-        user_embeds, item_embeds = self.forward(self.keep_rate)
+        user_embeds, item_embeds = self.forward()
         ancs, poss, negs = batch_data
         anc_embeds = user_embeds[ancs]
         pos_embeds = item_embeds[poss]
@@ -225,7 +224,7 @@ class IDEA_LIGHTGCN(BaseModel):
         return loss, losses
 
     def full_predict(self, batch_data):
-        user_embeds, item_embeds = self.forward(1.0)
+        user_embeds, item_embeds = self.forward()
         self.is_training = False
         pck_users, train_mask = batch_data
         pck_users = pck_users.long()
