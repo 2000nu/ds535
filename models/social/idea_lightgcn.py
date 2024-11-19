@@ -185,7 +185,7 @@ class IDEA_LIGHTGCN(BaseModel):
         # 사용자 간의 유사도를 반영한 trust influence matrix 생성
         trust_influence_mat = self._get_trust_influence_mat(trust_mat, user_embeds_first_gcn)
         # Trust influence matrix 정규화
-        trust_adj = self._normalize_trust_matrix(trust_influence_mat)
+        trust_adj = self._normalize_trust_matrix(trust_mat) * trust_influence_mat
         # Combined adjacency matrix 생성
         combined_adj = self._create_combined_adj(adj, trust_adj)
         

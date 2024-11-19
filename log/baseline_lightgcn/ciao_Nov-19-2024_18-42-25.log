@@ -1,0 +1,17 @@
+2024-11-19 18:42:25,864 - {'optimizer': {'name': 'adam', 'lr': 0.001, 'weight_decay': 0}, 'train': {'epoch': 500, 'batch_size': 4096, 'save_model': False, 'loss': 'pairwise', 'log_loss': False, 'test_step': 3, 'patience': 5, 'reproducible': True, 'seed': 2023, 'early_stop': True}, 'test': {'metrics': ['recall', 'ndcg'], 'k': [10, 20, 40], 'batch_size': 1024}, 'data': {'type': 'social', 'name': 'ciao', 'user_num': 7375, 'item_num': 105114}, 'model': {'name': 'baseline_lightgcn', 'layer_num': 2, 'reg_weight': 1e-08, 'embedding_size': 64}, 'tune': {'enable': False, 'hyperparameters': ['layer_num', 'reg_weight'], 'layer_num': [2, 3], 'reg_weight': [1e-06, 1e-07, 1e-08]}, 'device': 'cuda', 'log': True}
+2024-11-19 18:42:31,360 - Epoch   0 Test set [recall@10: 0.0001 recall@20: 0.0001 recall@40: 0.0002 ] Test set [ndcg@10: 0.0000 ndcg@20: 0.0001 ndcg@40: 0.0001 ] 
+2024-11-19 18:42:31,361 - Validation score increased.  Copying the best model ...
+2024-11-19 18:42:38,289 - Epoch   3 Test set [recall@10: 0.0000 recall@20: 0.0001 recall@40: 0.0003 ] Test set [ndcg@10: 0.0000 ndcg@20: 0.0001 ndcg@40: 0.0001 ] 
+2024-11-19 18:42:38,289 - Early stop counter: 1 out of 5
+2024-11-19 18:42:45,299 - Epoch   6 Test set [recall@10: 0.0000 recall@20: 0.0001 recall@40: 0.0002 ] Test set [ndcg@10: 0.0001 ndcg@20: 0.0001 ndcg@40: 0.0001 ] 
+2024-11-19 18:42:45,300 - Early stop counter: 2 out of 5
+2024-11-19 18:42:52,296 - Epoch   9 Test set [recall@10: 0.0000 recall@20: 0.0001 recall@40: 0.0005 ] Test set [ndcg@10: 0.0001 ndcg@20: 0.0001 ndcg@40: 0.0002 ] 
+2024-11-19 18:42:52,296 - Early stop counter: 3 out of 5
+2024-11-19 18:42:59,433 - Epoch  12 Test set [recall@10: 0.0001 recall@20: 0.0001 recall@40: 0.0006 ] Test set [ndcg@10: 0.0001 ndcg@20: 0.0001 ndcg@40: 0.0002 ] 
+2024-11-19 18:42:59,433 - Early stop counter: 4 out of 5
+2024-11-19 18:43:06,702 - Epoch  15 Test set [recall@10: 0.0000 recall@20: 0.0000 recall@40: 0.0004 ] Test set [ndcg@10: 0.0000 ndcg@20: 0.0000 ndcg@40: 0.0002 ] 
+2024-11-19 18:43:06,702 - Early stop counter: 5 out of 5
+2024-11-19 18:43:06,702 - Best Epoch 0
+2024-11-19 18:43:10,118 - Test set [recall@10: 0.0001 recall@20: 0.0001 recall@40: 0.0002 ] Test set [ndcg@10: 0.0000 ndcg@20: 0.0001 ndcg@40: 0.0001 ] 
+2024-11-19 18:43:13,905 - Test set [recall@10: 0.0001 recall@20: 0.0001 recall@40: 0.0002 ] Test set [ndcg@10: 0.0000 ndcg@20: 0.0001 ndcg@40: 0.0001 ] 
+2024-11-19 18:43:17,261 - Test set [recall@10: 0.0001 recall@20: 0.0001 recall@40: 0.0002 ] Test set [ndcg@10: 0.0000 ndcg@20: 0.0001 ndcg@40: 0.0001 ] 
