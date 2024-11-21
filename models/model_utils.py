@@ -305,3 +305,28 @@ class DGIDiscriminator(nn.Module):
         else:
             res = self.loss(score, t.ones_like(score))
         return res
+
+
+class SelfGatingUnit(nn.Module):
+    def __init__(self, input_dim):
+        """
+        Implements the self-gating unit as per the provided formula:
+        Pc^(0) = P^(0) ⊙ sigmoid(P^(0)Wg^c + bg^c)
+        Args:
+            input_dim (int): Dimension of the input features (P^(0))
+        """
+        super(SelfGatingUnit, self).__init__()
+        self.Wg = nn.Linear(input_dim, input_dim, bias=True)  # Wg^c and bg^c are combined in Linear
+
+    def forward(self, P_0):
+        """
+        Forward pass of the self-gating unit
+        Args:
+            P_0 (Tensor): Input tensor P^(0) of shape (batch_size, input_dim)
+        Returns:
+            Tensor: Output tensor Pc^(0) of shape (batch_size, input_dim)
+        """
+        gate = t.sigmoid(self.Wg(P_0))  # σ(P^(0)Wg^c + bg^c)
+        P_c_0 = P_0 * gate  # P^(0) ⊙ gate
+        return P_c_0
+
