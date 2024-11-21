@@ -3,7 +3,10 @@ from torch import nn
 from models.aug_utils import EdgeDrop
 from models.base_model import BaseModel
 from config.configurator import configs
-from models.loss_utils import cal_bpr_loss, reg_params
+from models.loss_utils import cal_bpr_loss, reg_params, cal_infonce_loss
+from models.model_utils import *
+from torch_geometric.utils import get_ppr
+import networkx as nx
 
 init = nn.init.xavier_uniform_
 uniformInit = nn.init.uniform
@@ -18,20 +21,73 @@ class IDEA_LIGHTGCN(BaseModel):
         self.trn_mat = self._coo_to_sparse_tensor(data_handler.trn_mat)
         self.trust_mat = self._coo_to_sparse_tensor(data_handler.trust_mat)
 
-        # COO Matrix -> Sparse Tensor 변환 및 정규화
-        A = self._create_adj_matrix(self.trn_mat)
-        self.adj = self._normalize_sparse_matrix(A)
-
         self.layer_num = configs['model']['layer_num']
         self.reg_weight = configs['model']['reg_weight']
-        
 
         self.user_embeds = nn.Parameter(init(t.empty(self.user_num, self.embedding_size)))
         self.item_embeds = nn.Parameter(init(t.empty(self.item_num, self.embedding_size)))
 
-        self.edge_dropper = EdgeDrop()
         self.is_training = True
         self.final_embeds = None
+        
+        # COO Matrix -> Sparse Tensor 변환 및 정규화
+        A = self._create_adj_matrix(self.trn_mat)
+        self.adj = self._normalize_sparse_matrix(A)
+        
+        if configs['model']['self_gating_unit']:
+            self.self_gating_unit_social = SelfGatingUnit(self.embedding_size)
+            self.self_gating_unit_interaction = SelfGatingUnit(self.embedding_size)
+            # usage example:
+            # embedding_after_sgl = self.self_gating_unit(embedding_before_sgl)
+            # user_embeds_social = self.self_gating_unit(user_embeds)
+        
+        if configs['model']['pagerank']:
+            pagerank = self._get_pagerank(self.trust_mat, self.user_num) # t.tensor
+            self.pagerank_normalized_trust_matrix = self._pagerank_normalized_trust_matrix(pagerank)
+
+    
+    def _get_pagerank(self, trust_mat, num_users, alpha=0.85, max_iter=100, tol=1e-6):
+        """
+        Compute the PageRank of nodes in a social graph using networkx.
+        
+        Args:
+            trust_mat (t.sparse_coo_tensor): Sparse adjacency matrix of the social graph.
+            num_users (int): Number of users in the social graph.
+            alpha (float): Damping factor (usually 0.85).
+            max_iter (int): Maximum number of iterations.
+            tol (float): Convergence tolerance.
+        
+        Returns:
+            t.Tensor: PageRank scores for each user.
+        """
+        
+        edge_index = trust_mat._indices()
+        edge_list = list(zip(edge_index[0].tolist(), edge_index[1].tolist()))
+
+        G = nx.DiGraph()
+        G.add_edges_from(edge_list)
+        pagerank = nx.pagerank(G, alpha=alpha, max_iter=max_iter, tol=tol)
+        
+        pagerank_full = {i: pagerank.get(i, 0.0) for i in range(num_users)} # some users do not have relation in social graph
+        pagerank = t.tensor([pagerank_full[i] for i in range(num_users)], dtype=t.float32, device=self.device)
+        
+        # sorted_indices = t.argsort(pr, descending=True)
+        # top_3 = sorted_indices[:3]
+        # print(f"Top 3 PageRank scores for {configs['data']['name']} dataset:")
+        # for idx in top_3:
+        #     print(f"Node {idx.item()}: {pr_scores[idx].item():.5f}")
+        # print(f"Average PageRank score: {1/num_users:.5f}")
+        # exit()
+        
+        return pagerank
+        
+    ######################################################
+    def _pagerank_normalized_trust_matrix(self, pagerank):
+        pagerank_sqrt = t.sqrt(pagerank)
+        normalized_matrix = t.ger(pagerank_sqrt, pagerank_sqrt) # outer product
+        return normalized_matrix
+    ######################################################
+    
     
     def _coo_to_sparse_tensor(self, coo_mat):
         """COO matrix를 torch sparse tensor로 변환"""
@@ -127,10 +183,10 @@ class IDEA_LIGHTGCN(BaseModel):
 
         return combined_adj.coalesce()
 
-    def _propagate(self, combined_adj, embeds):
+    def _propagate(self, adj, embeds):
         """전파 함수"""
         # Combined Adj와 입력 임베딩을 사용한 전파
-        propagated_embeds = t.sparse.mm(combined_adj, embeds)
+        propagated_embeds = t.sparse.mm(adj, embeds)
         return propagated_embeds
     
     ######################################################
@@ -145,11 +201,22 @@ class IDEA_LIGHTGCN(BaseModel):
         Returns:
             torch.sparse.FloatTensor: Adjusted trust influence matrix (sparse).
         """
-        user_embeds = user_embeds / t.norm(user_embeds, p=2, dim=1, keepdim=True)
-        user_cosine_sim = t.matmul(user_embeds, user_embeds.T)
+        user_norm_embeds = user_embeds / t.norm(user_embeds, p=2, dim=1, keepdim=True)
+        user_cosine_sim = t.matmul(user_embeds, user_norm_embeds.T)
         user_norm_sim = (1 + user_cosine_sim) / 2
-        trust_influence_mat = trust_mat * user_norm_sim
+        trust_mat_dense = trust_mat.to_dense()
+        trust_influence_mat = trust_mat_dense * user_norm_sim
         
+        # influence(u,v) = (1+cos(z_u, z_v))/2 '* exp(-|z_u-z_v|^2/ 2sigma^2 )'
+        # normalize cosine similarity with exponential RBF kernel
+        if 'sigma' in configs['model']:
+            sigma = configs['model']['sigma']
+            sqaured_user_embeds = (user_embeds ** 2).sum(dim=1, keepdim=True)
+            kernel_mat = sqaured_user_embeds - 2 * user_embeds @ user_embeds.T + sqaured_user_embeds.T
+            kernel_mat = t.exp(-kernel_mat / (2 * sigma ** 2))
+            trust_influence_mat *= kernel_mat
+
+        trust_influence_mat = trust_influence_mat.to_sparse()
         return trust_influence_mat
     ######################################################
     
@@ -166,8 +233,10 @@ class IDEA_LIGHTGCN(BaseModel):
         return self._normalize_sparse_matrix(trust_mat)
     ######################################################
     
+
+    
     ######################################################
-    def get_combined_adj(self, trust_mat, adj, embeds):
+    def get_trust_adj(self, trust_mat, adj, embeds):
         """
         Social trust graph와 user-item graph를 결합한 combined adjacency matrix 생성.
 
@@ -177,20 +246,26 @@ class IDEA_LIGHTGCN(BaseModel):
             embeds (torch.Tensor): User + item embeddings (dense).
 
         Returns:
-            torch.sparse.FloatTensor: Combined adjacency matrix (sparse).
+            torch.sparse.FloatTensor: trust adjacency matrix with influence relaxation (sparse).
         """
         
         # 1-hop propagation을 통해 user 임베딩 계산
         user_embeds_first_gcn = t.sparse.mm(adj, embeds)[:self.user_num]
         # 사용자 간의 유사도를 반영한 trust influence matrix 생성
         trust_influence_mat = self._get_trust_influence_mat(trust_mat, user_embeds_first_gcn)
-        # Trust influence matrix 정규화
-        trust_adj = self._normalize_trust_matrix(trust_mat) * trust_influence_mat
-        # Combined adjacency matrix 생성
-        combined_adj = self._create_combined_adj(adj, trust_adj)
         
-        return combined_adj
+        if configs['model']['pagerank']:
+            # Pagerank 사용 시 adjacency matrix 변경
+            trust_adj = self.pagerank_normalized_trust_matrix.to_dense() * trust_influence_mat.to_dense()
+            trust_adj += t.eye(self.user_num, device=self.device) # self-loop
+            trust_adj = trust_adj.to_sparse()
+        else:
+            # Trust influence matrix 정규화
+            trust_adj = self._normalize_trust_matrix(trust_mat) * trust_influence_mat
+        
+        return trust_adj
     ######################################################
+    
     
     def forward(self):
         if not self.is_training and self.final_embeds is not None:
@@ -198,15 +273,51 @@ class IDEA_LIGHTGCN(BaseModel):
         embeds = t.concat([self.user_embeds, self.item_embeds], axis=0)
         embeds_list = [embeds]
         
-        ######################################################
-        combined_adj = self.get_combined_adj(self.trust_mat, self.adj, embeds)
-        ######################################################
+        if configs['model']['combine_gcn']:
+            trust_adj = self.get_trust_adj(self.trust_mat, self.adj, embeds)
+            combined_adj = self._create_combined_adj(self.adj, trust_adj)
+            
+            for i in range(self.layer_num):
+                embeds = self._propagate(combined_adj, embeds_list[-1])
+                embeds_list.append(embeds)
+            
+            embeds = sum(embeds_list)# / len(embeds_list)
         
-        for i in range(self.layer_num):
-            embeds = self._propagate(combined_adj, embeds_list[-1])
-            embeds_list.append(embeds)
+        else:
+            user_embeds = self.user_embeds
+            if configs['model']['self_gating_unit']:
+                social_user_embeds = self.self_gating_unit_social(user_embeds)
+                interaction_user_embeds = self.self_gating_unit_interaction(user_embeds)
+            else:
+                social_user_embeds = user_embeds
+                interaction_user_embeds = user_embeds
+            social_embeds = social_user_embeds
+            interaction_embeds = t.concat([interaction_user_embeds, self.item_embeds], axis=0)
+            social_embeds_list = [social_embeds]
+            interaction_embeds_list = [interaction_embeds]
+            
+            interaction_adj = self.adj
+            trust_adj = self.get_trust_adj(self.trust_mat, self.adj, embeds)
+            
+            for i in range(self.layer_num):
+                interaction_embeds = self._propagate(interaction_adj, interaction_embeds_list[-1])
+                interaction_embeds_list.append(interaction_embeds)
+                social_embeds = self._propagate(trust_adj, social_embeds_list[-1])
+                social_embeds_list.append(social_embeds)
+            
+            interaction_embeds = sum(interaction_embeds_list)# / len(interaction_embeds_list)
+            social_embeds = sum(social_embeds_list)# / len(social_embeds_list)
+            
+            if 'alpha' in configs['model']:
+                alpha = configs['model']['alpha']
+                user_embeds = alpha * interaction_embeds[:self.user_num] + (1 - alpha) * social_embeds
+                item_embeds = interaction_embeds[self.user_num:]
+            else:
+                user_embeds = interaction_embeds[:self.user_num] + social_embeds
+                item_embeds = interaction_embeds[self.user_num:]
+            
+            embeds = t.concat([user_embeds, item_embeds], axis=0)
         
-        embeds = sum(embeds_list)# / len(embeds_list)
         self.final_embeds = embeds
         return embeds[:self.user_num], embeds[self.user_num:]
     
@@ -221,6 +332,14 @@ class IDEA_LIGHTGCN(BaseModel):
         reg_loss = self.reg_weight * reg_params(self)
         loss = bpr_loss + reg_loss
         losses = {'bpr_loss': bpr_loss, 'reg_loss': reg_loss}
+        
+        if 'cl_weight' in configs['model'].keys():
+            cl_weight = configs['model']['cl_weight']
+            cl_loss_item = cal_infonce_loss(item_embeds, item_embeds, item_embeds)
+            cl_loss = cl_weight * cl_loss_item
+            loss += cl_loss
+            losses['cl_loss'] = cl_loss
+            
         return loss, losses
 
     def full_predict(self, batch_data):
