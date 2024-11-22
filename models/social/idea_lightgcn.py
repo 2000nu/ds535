@@ -5,7 +5,6 @@ from models.base_model import BaseModel
 from config.configurator import configs
 from models.loss_utils import cal_bpr_loss, reg_params, cal_infonce_loss
 from models.model_utils import *
-from torch_geometric.utils import get_ppr
 import networkx as nx
 
 init = nn.init.xavier_uniform_
