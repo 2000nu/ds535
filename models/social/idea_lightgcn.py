@@ -336,7 +336,8 @@ class IDEA_LIGHTGCN(BaseModel):
         if 'cl_weight' in configs['model'].keys():
             cl_weight = configs['model']['cl_weight']
 
-            cl_loss_item = cal_infonce_loss(item_embeds, item_embeds, item_embeds)
+            cl_loss_item = cal_infonce_loss(pos_embeds, pos_embeds, item_embeds)
+            
             cl_loss = cl_weight * cl_loss_item
             loss += cl_loss
             losses['cl_loss'] = cl_loss

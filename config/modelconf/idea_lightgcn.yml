@@ -35,7 +35,7 @@ model:
   combine_gcn: false
   alpha: 0.8
   cl_weight: 1.0e-5
-  # sigma: 20 # std for exponential RBF kernel
+  sigma: 20 # std for exponential RBF kernel
 
 tune:
   enable: true # Whether to enable grid search to search for optimal hyperparameters
