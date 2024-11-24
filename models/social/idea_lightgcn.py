@@ -5,7 +5,7 @@ from models.base_model import BaseModel
 from config.configurator import configs
 from models.loss_utils import cal_bpr_loss, reg_params, cal_infonce_loss
 from models.model_utils import *
-# from torch_geometric.utils import get_ppr
+
 import networkx as nx
 
 init = nn.init.xavier_uniform_
@@ -364,9 +364,12 @@ class IDEA_LIGHTGCN(BaseModel):
         loss = bpr_loss + reg_loss
         losses = {'bpr_loss': bpr_loss, 'reg_loss': reg_loss}
         
+        
         if 'cl_weight' in configs['model'].keys():
             cl_weight = configs['model']['cl_weight']
+
             cl_loss_item = cal_infonce_loss(pos_embeds, pos_embeds, item_embeds)
+
             cl_loss = cl_weight * cl_loss_item
             loss += cl_loss
             losses['cl_loss'] = cl_loss
