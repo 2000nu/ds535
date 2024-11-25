@@ -30,6 +30,9 @@ model:
   layer_num: 2
   reg_weight: 1.0e-8
   embedding_size: 64
+  
+  # --- Options --- #
+  # You can toggle between true and false, or exclude an option by commenting it out.
   self_gating_unit: true
   pagerank: true
   combine_gcn: false
@@ -38,7 +41,7 @@ model:
   sigma: 20 # std for exponential RBF kernel
 
 tune:
-  enable: true # Whether to enable grid search to search for optimal hyperparameters
+  enable: false # Whether to enable grid search to search for optimal hyperparameters
   hyperparameters: [layer_num, reg_weight, cl_weight, alpha] # The name of the hyperparameter
   layer_num: [2, 3] # Use a list to store the search range
   reg_weight: [1.0e-6, 1.0e-7, 1.0e-8]
