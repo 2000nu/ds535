@@ -6,8 +6,8 @@ import os
 # Dictionary to store results
 results_dict = defaultdict(list)
 
-model = 'dsl'
-file_name = 'ciao-tune_Nov-23-2024_14-03-50'
+model = 'idea_lightgcn'
+file_name = 'yelp-tune_Nov-24-2024_10-20-38'
 file_path = os.path.join(model, file_name + ".log")
 
 # Regular expression to extract recall@10
