@@ -68,6 +68,8 @@ def test():
     # Sixth Step: test
     trainer.test(best_model)
 
+### modified
+configs['tune']['enable'] = True
 if not configs['tune']['enable']:
     main()
 else:
