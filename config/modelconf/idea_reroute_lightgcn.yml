@@ -42,9 +42,10 @@ model:
   sigma: 20 # std for exponential RBF kernel
 
 tune:
-  enable: false # Whether to enable grid search to search for optimal hyperparameters
-  hyperparameters: [layer_num, reg_weight, cl_weight, alpha] # The name of the hyperparameter
-  layer_num: [2, 3] # Use a list to store the search range
-  reg_weight: [1.0e-6, 1.0e-7, 1.0e-8]
-  cl_weight: [1.0e-5, 1.0e-6, 1.0e-7]
-  alpha: [0.7, 0.8, 0.9]
+  enable: True # Whether to enable grid search to search for optimal hyperparameters
+  hyperparameters: [similarity_threshold] # The name of the hyperparameter
+  similarity_threshold: [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9] # Use a list to store the search range
+  # layer_num: [2, 3] # Use a list to store the search range
+  # reg_weight: [1.0e-6, 1.0e-7, 1.0e-8]
+  # cl_weight: [1.0e-5, 1.0e-6, 1.0e-7]
+  # alpha: [0.7, 0.8, 0.9]
