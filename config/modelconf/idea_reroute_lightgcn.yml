@@ -26,7 +26,7 @@ data:
 
 
 model:
-  name: idea_lightgcn # case-insensitive
+  name: idea_reroute_lightgcn # case-insensitive
   layer_num: 2
   reg_weight: 1.0e-8
   embedding_size: 64

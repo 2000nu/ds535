@@ -11,9 +11,9 @@ import networkx as nx
 init = nn.init.xavier_uniform_
 uniformInit = nn.init.uniform
 
-class IDEA_LIGHTGCN(BaseModel):
+class IDEA_reroute_LIGHTGCN(BaseModel):
     def __init__(self, data_handler):
-        super(IDEA_LIGHTGCN, self).__init__(data_handler)
+        super(IDEA_reroute_LIGHTGCN, self).__init__(data_handler)
 
         self.device = configs['device']
         
@@ -57,7 +57,7 @@ class IDEA_LIGHTGCN(BaseModel):
             self.pagerank_normalized_trust_matrix = self._pagerank_normalized_trust_matrix(pagerank)
 
 
-    def _reroute_trust_matrix(trust_mat, uu_sim, threshold):
+    def _reroute_trust_matrix(self, trust_mat, uu_sim, threshold):
         device = configs["device"]
 
         S_dense = trust_mat.to_dense().to(device)
@@ -70,10 +70,17 @@ class IDEA_LIGHTGCN(BaseModel):
         for i, j in weak_connections:
 
             # get indices of neighbors of i
-            idx_Ni = (S_dense[i] == 1).nonzero(as_tuple=False).squeeze()
+            idx_Ni = (S_dense[i] == 1).nonzero(as_tuple=False)
+            
+            # checking if the dimension is above 1
+            if idx_Ni.dim() > 1:
+                idx_Ni = idx_Ni.squeeze()
 
             # similarities between neighbors of i and j
             if idx_Ni.numel() > 0:
+
+                if len(idx_Ni.shape) == 0:
+                    idx_Ni = idx_Ni.unsqueeze(0)
 
                 Ni_sim_j = uu_sim_dense[idx_Ni, j]
                 max_sim_Ni_idx = Ni_sim_j.argmax()
@@ -85,10 +92,17 @@ class IDEA_LIGHTGCN(BaseModel):
                 max_Ni = None
 
             # get indices of neighbors of j
-            idx_Nj = (S_dense[j] == 1).nonzero(as_tuple=False).squeeze()
+            idx_Nj = (S_dense[j] == 1).nonzero(as_tuple=False)
+
+            # checking if the dimension is above 1
+            if idx_Nj.dim() > 1:
+                idx_Nj = idx_Nj.squeeze()
 
             # similarities between neighbors of j and i
             if idx_Nj.numel() > 0:
+
+                if len(idx_Nj.shape) == 0:
+                    idx_Nj = idx_Nj.unsqueeze(0)
 
                 Nj_sim_i = uu_sim_dense[i, idx_Nj]
                 max_sim_Nj_idx = Nj_sim_i.argmax()
