@@ -269,6 +269,7 @@ class IDEA_LIGHTGCN(BaseModel):
         """Trust Matrix (torch)에서 socially aware normalize하는 함수"""
         """D^(-1/2) A D^(-1/2) D = D^(-1/2) A D^(1/2)"""
         # 행 합 계산 (degree)
+        mat = trust_mat
         degree = t.sparse.sum(mat, dim=1).to_dense()
         degree_sqrt = t.pow(degree, 0.5)
         degree_inv_sqrt = t.pow(degree, -0.5)
