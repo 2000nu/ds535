@@ -1,0 +1,83 @@
+2024-11-28 11:24:56,393 - {'optimizer': {'name': 'adam', 'lr': 0.001, 'weight_decay': 0}, 'train': {'epoch': 500, 'batch_size': 4096, 'save_model': False, 'loss': 'pairwise', 'log_loss': False, 'test_step': 3, 'patience': 5, 'reproducible': True, 'seed': 2023, 'early_stop': True}, 'test': {'metrics': ['recall', 'ndcg'], 'k': [10, 20, 40], 'batch_size': 1024}, 'data': {'type': 'social', 'name': 'ciao', 'user_num': 7375, 'item_num': 105114}, 'model': {'name': 'idea_lightgcn_v2', 'layer_num': 3, 'reg_weight': 1e-06, 'embedding_size': 64, 'self_gating_unit': True, 'pagerank': False, 'combine_gcn': False, 'alpha': 0.9, 'cl_weight': 1e-05, 'sigma': 20, 'not_normalize': True}, 'tune': {'enable': False, 'hyperparameters': ['layer_num', 'reg_weight', 'cl_weight', 'alpha'], 'layer_num': [2, 3], 'reg_weight': [1e-06, 1e-07, 1e-08], 'cl_weight': [1e-05, 1e-06, 1e-07], 'alpha': [0.7, 0.8, 0.9]}, 'device': 'cuda', 'log': True}
+2024-11-28 11:25:04,529 - Epoch   0 Test set [recall@10: 0.0215 recall@20: 0.0315 recall@40: 0.0422 ] Test set [ndcg@10: 0.0252 ndcg@20: 0.0272 ndcg@40: 0.0299 ] 
+2024-11-28 11:25:04,530 - Validation score increased.  Copying the best model ...
+2024-11-28 11:25:19,049 - Epoch   3 Test set [recall@10: 0.0246 recall@20: 0.0371 recall@40: 0.0525 ] Test set [ndcg@10: 0.0286 ndcg@20: 0.0315 ndcg@40: 0.0359 ] 
+2024-11-28 11:25:19,050 - Validation score increased.  Copying the best model ...
+2024-11-28 11:25:33,921 - Epoch   6 Test set [recall@10: 0.0254 recall@20: 0.0386 recall@40: 0.0543 ] Test set [ndcg@10: 0.0289 ndcg@20: 0.0320 ndcg@40: 0.0363 ] 
+2024-11-28 11:25:33,921 - Validation score increased.  Copying the best model ...
+2024-11-28 11:25:48,300 - Epoch   9 Test set [recall@10: 0.0276 recall@20: 0.0413 recall@40: 0.0575 ] Test set [ndcg@10: 0.0322 ndcg@20: 0.0351 ndcg@40: 0.0395 ] 
+2024-11-28 11:25:48,301 - Validation score increased.  Copying the best model ...
+2024-11-28 11:26:03,432 - Epoch  12 Test set [recall@10: 0.0290 recall@20: 0.0428 recall@40: 0.0579 ] Test set [ndcg@10: 0.0329 ndcg@20: 0.0359 ndcg@40: 0.0400 ] 
+2024-11-28 11:26:03,433 - Validation score increased.  Copying the best model ...
+2024-11-28 11:26:17,889 - Epoch  15 Test set [recall@10: 0.0293 recall@20: 0.0432 recall@40: 0.0583 ] Test set [ndcg@10: 0.0333 ndcg@20: 0.0363 ndcg@40: 0.0405 ] 
+2024-11-28 11:26:17,890 - Validation score increased.  Copying the best model ...
+2024-11-28 11:26:32,200 - Epoch  18 Test set [recall@10: 0.0302 recall@20: 0.0447 recall@40: 0.0609 ] Test set [ndcg@10: 0.0343 ndcg@20: 0.0374 ndcg@40: 0.0418 ] 
+2024-11-28 11:26:32,201 - Validation score increased.  Copying the best model ...
+2024-11-28 11:26:47,229 - Epoch  21 Test set [recall@10: 0.0285 recall@20: 0.0421 recall@40: 0.0577 ] Test set [ndcg@10: 0.0315 ndcg@20: 0.0347 ndcg@40: 0.0392 ] 
+2024-11-28 11:26:47,230 - Early stop counter: 1 out of 5
+2024-11-28 11:27:01,787 - Epoch  24 Test set [recall@10: 0.0295 recall@20: 0.0449 recall@40: 0.0615 ] Test set [ndcg@10: 0.0340 ndcg@20: 0.0376 ndcg@40: 0.0422 ] 
+2024-11-28 11:27:01,787 - Early stop counter: 2 out of 5
+2024-11-28 11:27:16,284 - Epoch  27 Test set [recall@10: 0.0300 recall@20: 0.0454 recall@40: 0.0630 ] Test set [ndcg@10: 0.0347 ndcg@20: 0.0381 ndcg@40: 0.0430 ] 
+2024-11-28 11:27:16,284 - Early stop counter: 3 out of 5
+2024-11-28 11:27:31,648 - Epoch  30 Test set [recall@10: 0.0304 recall@20: 0.0454 recall@40: 0.0635 ] Test set [ndcg@10: 0.0351 ndcg@20: 0.0384 ndcg@40: 0.0433 ] 
+2024-11-28 11:27:31,648 - Validation score increased.  Copying the best model ...
+2024-11-28 11:27:46,031 - Epoch  33 Test set [recall@10: 0.0307 recall@20: 0.0453 recall@40: 0.0636 ] Test set [ndcg@10: 0.0349 ndcg@20: 0.0382 ndcg@40: 0.0432 ] 
+2024-11-28 11:27:46,032 - Validation score increased.  Copying the best model ...
+2024-11-28 11:28:01,284 - Epoch  36 Test set [recall@10: 0.0309 recall@20: 0.0466 recall@40: 0.0654 ] Test set [ndcg@10: 0.0356 ndcg@20: 0.0391 ndcg@40: 0.0442 ] 
+2024-11-28 11:28:01,285 - Validation score increased.  Copying the best model ...
+2024-11-28 11:28:15,778 - Epoch  39 Test set [recall@10: 0.0315 recall@20: 0.0466 recall@40: 0.0649 ] Test set [ndcg@10: 0.0355 ndcg@20: 0.0389 ndcg@40: 0.0440 ] 
+2024-11-28 11:28:15,778 - Validation score increased.  Copying the best model ...
+2024-11-28 11:28:30,221 - Epoch  42 Test set [recall@10: 0.0311 recall@20: 0.0465 recall@40: 0.0655 ] Test set [ndcg@10: 0.0352 ndcg@20: 0.0387 ndcg@40: 0.0440 ] 
+2024-11-28 11:28:30,222 - Early stop counter: 1 out of 5
+2024-11-28 11:28:45,589 - Epoch  45 Test set [recall@10: 0.0314 recall@20: 0.0460 recall@40: 0.0653 ] Test set [ndcg@10: 0.0353 ndcg@20: 0.0384 ndcg@40: 0.0438 ] 
+2024-11-28 11:28:45,589 - Early stop counter: 2 out of 5
+2024-11-28 11:29:00,107 - Epoch  48 Test set [recall@10: 0.0310 recall@20: 0.0458 recall@40: 0.0656 ] Test set [ndcg@10: 0.0349 ndcg@20: 0.0383 ndcg@40: 0.0438 ] 
+2024-11-28 11:29:00,107 - Early stop counter: 3 out of 5
+2024-11-28 11:29:14,579 - Epoch  51 Test set [recall@10: 0.0315 recall@20: 0.0466 recall@40: 0.0664 ] Test set [ndcg@10: 0.0355 ndcg@20: 0.0388 ndcg@40: 0.0444 ] 
+2024-11-28 11:29:14,580 - Early stop counter: 4 out of 5
+2024-11-28 11:29:29,977 - Epoch  54 Test set [recall@10: 0.0320 recall@20: 0.0475 recall@40: 0.0684 ] Test set [ndcg@10: 0.0365 ndcg@20: 0.0398 ndcg@40: 0.0457 ] 
+2024-11-28 11:29:29,978 - Validation score increased.  Copying the best model ...
+2024-11-28 11:29:44,561 - Epoch  57 Test set [recall@10: 0.0324 recall@20: 0.0480 recall@40: 0.0691 ] Test set [ndcg@10: 0.0367 ndcg@20: 0.0400 ndcg@40: 0.0458 ] 
+2024-11-28 11:29:44,562 - Validation score increased.  Copying the best model ...
+2024-11-28 11:29:59,531 - Epoch  60 Test set [recall@10: 0.0321 recall@20: 0.0485 recall@40: 0.0693 ] Test set [ndcg@10: 0.0366 ndcg@20: 0.0402 ndcg@40: 0.0460 ] 
+2024-11-28 11:29:59,531 - Early stop counter: 1 out of 5
+2024-11-28 11:30:14,248 - Epoch  63 Test set [recall@10: 0.0316 recall@20: 0.0478 recall@40: 0.0688 ] Test set [ndcg@10: 0.0361 ndcg@20: 0.0396 ndcg@40: 0.0455 ] 
+2024-11-28 11:30:14,248 - Early stop counter: 2 out of 5
+2024-11-28 11:30:28,679 - Epoch  66 Test set [recall@10: 0.0325 recall@20: 0.0490 recall@40: 0.0700 ] Test set [ndcg@10: 0.0369 ndcg@20: 0.0405 ndcg@40: 0.0463 ] 
+2024-11-28 11:30:28,680 - Validation score increased.  Copying the best model ...
+2024-11-28 11:30:44,209 - Epoch  69 Test set [recall@10: 0.0321 recall@20: 0.0490 recall@40: 0.0703 ] Test set [ndcg@10: 0.0368 ndcg@20: 0.0405 ndcg@40: 0.0464 ] 
+2024-11-28 11:30:44,209 - Early stop counter: 1 out of 5
+2024-11-28 11:30:59,314 - Epoch  72 Test set [recall@10: 0.0320 recall@20: 0.0488 recall@40: 0.0693 ] Test set [ndcg@10: 0.0366 ndcg@20: 0.0403 ndcg@40: 0.0460 ] 
+2024-11-28 11:30:59,314 - Early stop counter: 2 out of 5
+2024-11-28 11:31:14,451 - Epoch  75 Test set [recall@10: 0.0323 recall@20: 0.0490 recall@40: 0.0691 ] Test set [ndcg@10: 0.0370 ndcg@20: 0.0405 ndcg@40: 0.0461 ] 
+2024-11-28 11:31:14,452 - Early stop counter: 3 out of 5
+2024-11-28 11:31:29,982 - Epoch  78 Test set [recall@10: 0.0323 recall@20: 0.0499 recall@40: 0.0703 ] Test set [ndcg@10: 0.0368 ndcg@20: 0.0407 ndcg@40: 0.0464 ] 
+2024-11-28 11:31:29,982 - Early stop counter: 4 out of 5
+2024-11-28 11:31:44,745 - Epoch  81 Test set [recall@10: 0.0331 recall@20: 0.0504 recall@40: 0.0714 ] Test set [ndcg@10: 0.0368 ndcg@20: 0.0407 ndcg@40: 0.0466 ] 
+2024-11-28 11:31:44,746 - Validation score increased.  Copying the best model ...
+2024-11-28 11:31:59,277 - Epoch  84 Test set [recall@10: 0.0319 recall@20: 0.0490 recall@40: 0.0703 ] Test set [ndcg@10: 0.0361 ndcg@20: 0.0401 ndcg@40: 0.0460 ] 
+2024-11-28 11:31:59,277 - Early stop counter: 1 out of 5
+2024-11-28 11:32:13,879 - Epoch  87 Test set [recall@10: 0.0334 recall@20: 0.0509 recall@40: 0.0728 ] Test set [ndcg@10: 0.0376 ndcg@20: 0.0415 ndcg@40: 0.0476 ] 
+2024-11-28 11:32:13,879 - Validation score increased.  Copying the best model ...
+2024-11-28 11:32:28,419 - Epoch  90 Test set [recall@10: 0.0329 recall@20: 0.0503 recall@40: 0.0715 ] Test set [ndcg@10: 0.0365 ndcg@20: 0.0405 ndcg@40: 0.0465 ] 
+2024-11-28 11:32:28,419 - Early stop counter: 1 out of 5
+2024-11-28 11:32:42,852 - Epoch  93 Test set [recall@10: 0.0334 recall@20: 0.0510 recall@40: 0.0721 ] Test set [ndcg@10: 0.0370 ndcg@20: 0.0411 ndcg@40: 0.0470 ] 
+2024-11-28 11:32:42,852 - Early stop counter: 2 out of 5
+2024-11-28 11:32:57,455 - Epoch  96 Test set [recall@10: 0.0336 recall@20: 0.0518 recall@40: 0.0733 ] Test set [ndcg@10: 0.0375 ndcg@20: 0.0417 ndcg@40: 0.0477 ] 
+2024-11-28 11:32:57,456 - Validation score increased.  Copying the best model ...
+2024-11-28 11:33:12,002 - Epoch  99 Test set [recall@10: 0.0343 recall@20: 0.0518 recall@40: 0.0742 ] Test set [ndcg@10: 0.0382 ndcg@20: 0.0420 ndcg@40: 0.0482 ] 
+2024-11-28 11:33:12,003 - Validation score increased.  Copying the best model ...
+2024-11-28 11:33:26,551 - Epoch 102 Test set [recall@10: 0.0340 recall@20: 0.0525 recall@40: 0.0740 ] Test set [ndcg@10: 0.0379 ndcg@20: 0.0421 ndcg@40: 0.0481 ] 
+2024-11-28 11:33:26,551 - Early stop counter: 1 out of 5
+2024-11-28 11:33:41,116 - Epoch 105 Test set [recall@10: 0.0340 recall@20: 0.0521 recall@40: 0.0735 ] Test set [ndcg@10: 0.0377 ndcg@20: 0.0420 ndcg@40: 0.0480 ] 
+2024-11-28 11:33:41,116 - Early stop counter: 2 out of 5
+2024-11-28 11:33:55,594 - Epoch 108 Test set [recall@10: 0.0335 recall@20: 0.0517 recall@40: 0.0736 ] Test set [ndcg@10: 0.0371 ndcg@20: 0.0414 ndcg@40: 0.0476 ] 
+2024-11-28 11:33:55,595 - Early stop counter: 3 out of 5
+2024-11-28 11:34:10,065 - Epoch 111 Test set [recall@10: 0.0330 recall@20: 0.0514 recall@40: 0.0733 ] Test set [ndcg@10: 0.0363 ndcg@20: 0.0408 ndcg@40: 0.0470 ] 
+2024-11-28 11:34:10,065 - Early stop counter: 4 out of 5
+2024-11-28 11:34:24,584 - Epoch 114 Test set [recall@10: 0.0338 recall@20: 0.0524 recall@40: 0.0749 ] Test set [ndcg@10: 0.0378 ndcg@20: 0.0421 ndcg@40: 0.0485 ] 
+2024-11-28 11:34:24,584 - Early stop counter: 5 out of 5
+2024-11-28 11:34:24,585 - Best Epoch 99
+2024-11-28 11:34:28,087 - Test set [recall@10: 0.0343 recall@20: 0.0518 recall@40: 0.0742 ] Test set [ndcg@10: 0.0382 ndcg@20: 0.0420 ndcg@40: 0.0482 ] 
+2024-11-28 11:34:31,521 - Test set [recall@10: 0.0343 recall@20: 0.0518 recall@40: 0.0742 ] Test set [ndcg@10: 0.0382 ndcg@20: 0.0420 ndcg@40: 0.0482 ] 
+2024-11-28 11:34:34,912 - Test set [recall@10: 0.0343 recall@20: 0.0518 recall@40: 0.0742 ] Test set [ndcg@10: 0.0382 ndcg@20: 0.0420 ndcg@40: 0.0482 ] 
