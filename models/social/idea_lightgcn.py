@@ -5,6 +5,7 @@ from models.base_model import BaseModel
 from config.configurator import configs
 from models.loss_utils import cal_bpr_loss, reg_params, cal_infonce_loss
 from models.model_utils import *
+
 import networkx as nx
 
 init = nn.init.xavier_uniform_
@@ -15,7 +16,6 @@ class IDEA_LIGHTGCN(BaseModel):
         super(IDEA_LIGHTGCN, self).__init__(data_handler)
 
         self.device = configs['device']
-        
         # Data handler에서 trn_mat과 trust_mat 가져오기
         self.trn_mat = self._coo_to_sparse_tensor(data_handler.trn_mat)
         self.trust_mat = self._coo_to_sparse_tensor(data_handler.trust_mat)
@@ -68,7 +68,7 @@ class IDEA_LIGHTGCN(BaseModel):
         pagerank = nx.pagerank(G, alpha=alpha, max_iter=max_iter, tol=tol)
         
         pagerank_full = {i: pagerank.get(i, 0.0) for i in range(num_users)} # some users do not have relation in social graph
-        pagerank = t.tensor([pagerank_full[i] for i in range(num_users)], dtype=t.float32, device=self.device)
+        pagerank = t.tensor([pagerank_full[i] for i in range(num_users)], dtype=t.float32) #, device=self.device)
         
         # sorted_indices = t.argsort(pr, descending=True)
         # top_3 = sorted_indices[:3]
@@ -195,32 +195,57 @@ class IDEA_LIGHTGCN(BaseModel):
 
         Args:
             trust_mat (torch.sparse.FloatTensor): Social trust graph (sparse).
-            user_embeds (torch.Tensor): 사용자 임베딩 (dense).
+            user_embeds (torch.Tensor): 사용자 임베딩 (dense).(learnable parameter)
 
         Returns:
             torch.sparse.FloatTensor: Adjusted trust influence matrix (sparse).
         """
+        # user_norm_embeds = user_embeds / t.norm(user_embeds, p=2, dim=1, keepdim=True)
+        # user_cosine_sim = t.matmul(user_norm_embeds, user_norm_embeds.T)
+        # user_norm_sim = (1 + user_cosine_sim) / 2
+        # trust_mat_dense = trust_mat.to_dense()
+        # trust_influence_mat = (trust_mat_dense * user_norm_sim)
+
+        # # influence(u,v) = (1+cos(z_u, z_v))/2 '* exp(-|z_u-z_v|^2/ 2sigma^2 )'
+        # # normalize cosine similarity with exponential RBF kernel
+        # if 'sigma' in configs['model']:
+        #     sigma = configs['model']['sigma']
+        #     sqaured_user_embeds = (user_embeds ** 2).sum(dim=1, keepdim=True)
+        #     intermediate_2 = sqaured_user_embeds + sqaured_user_embeds.T
+        #     intermediate= user_embeds @ user_embeds.T
+        #     kernel_mat = t.exp(-(intermediate_2 - 2 * intermediate)) / (2*sigma**2)
+        #     # kernel_mat = t.exp(-kernel_mat / (2 * sigma ** 2))
+        #     trust_influence_mat *= kernel_mat
+
+        # trust_influence_mat = trust_influence_mat.to_sparse()
+        # return trust_influence_mat
+        # 사용자 임베딩 정규화
         user_norm_embeds = user_embeds / t.norm(user_embeds, p=2, dim=1, keepdim=True)
+
         # 희소 행렬 비-제로 위치 추출
         indices = trust_mat._indices()
         values = trust_mat._values()
+
         # 희소 행렬에 해당하는 사용자 임베딩 간 코사인 유사도 계산
         user_i = indices[0]  # source 노드
         user_j = indices[1]  # target 노드
         cosine_sim = (user_norm_embeds[user_i] * user_norm_embeds[user_j]).sum(dim=1)
         user_norm_sim = (1 + cosine_sim) / 2  # 코사인 유사도를 [0, 1]로 정규화
+
         # influence(u,v) = (1+cos(z_u, z_v))/2 * exp(-|z_u-z_v|^2 / (2*sigma^2))
         if 'sigma' in configs['model']:
             sigma = configs['model']['sigma']
             squared_user_embeds = (user_embeds ** 2).sum(dim=1)
+
             # RBF kernel 계산 (희소 연산)
             dist_squared = squared_user_embeds[user_i] - 2 * (user_embeds[user_i] * user_embeds[user_j]).sum(dim=1) + squared_user_embeds[user_j]
             kernel_values = t.exp(-dist_squared / (2 * sigma ** 2))
+
             # RBF kernel과 cosine similarity 결합
             adjusted_values = user_norm_sim * kernel_values
         else:
             adjusted_values = user_norm_sim
-    
+
         # 새로운 희소 행렬 생성
         trust_influence_mat = t.sparse_coo_tensor(indices, adjusted_values, size=trust_mat.shape)
         return trust_influence_mat
@@ -279,6 +304,17 @@ class IDEA_LIGHTGCN(BaseModel):
         if 'socially_aware_normalization' in configs['model'] and configs['model']['socialyl_aware_normalization']:
             trust_adj = self._socially_aware_normalize_trust_matrix(trust_mat)
         
+        # 1-hop propagation을 통해 user 임베딩 계산
+        user_embeds_first_gcn = t.sparse.mm(adj, embeds)[:self.user_num]
+        # 사용자 간의 유사도를 반영한 trust influence matrix 생성
+        trust_influence_mat = self._get_trust_influence_mat(trust_mat, user_embeds_first_gcn)
+        
+        if configs['model']['pagerank']:
+            # Pagerank 사용 시 adjacency matrix 변경
+            trust_adj = self.pagerank_normalized_trust_matrix.to(self.device).to_dense() * trust_influence_mat.to_dense()
+            trust_adj += t.eye(self.user_num, device=self.device) # self-loop
+            trust_adj = trust_adj.to_sparse()
+
         else:
             # 1-hop propagation을 통해 user 임베딩 계산
             user_embeds_first_gcn = t.sparse.mm(adj, embeds)[:self.user_num]
@@ -369,7 +405,7 @@ class IDEA_LIGHTGCN(BaseModel):
             cl_weight = configs['model']['cl_weight']
 
             cl_loss_item = cal_infonce_loss(pos_embeds, pos_embeds, item_embeds)
-            
+
             cl_loss = cl_weight * cl_loss_item
             loss += cl_loss
             losses['cl_loss'] = cl_loss
