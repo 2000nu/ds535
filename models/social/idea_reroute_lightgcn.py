@@ -35,7 +35,7 @@ class IDEA_reroute_LIGHTGCN(BaseModel):
         self.trust_mat_new = self._reroute_trust_matrix(self.trust_mat, self.uu_sim, threshold)
 
         # what should be set here?
-        self.trust_mat = self.trust_mat_new
+        # self.trust_mat = self.trust_mat_new
 
 
         self.is_training = True
@@ -426,13 +426,19 @@ class IDEA_reroute_LIGHTGCN(BaseModel):
     
     
     def forward(self):
+
+        #### modified
+        u_emb = self.user_embeds
+        uu_sim = t.mm(u_emb, u_emb.t())
+        self.trust_mat_new = self._reroute_trust_matrix(self.trust_mat, uu_sim, 0.5)
+
         if not self.is_training and self.final_embeds is not None:
             return self.final_embeds[:self.user_num], self.final_embeds[self.user_num:]
         embeds = t.concat([self.user_embeds, self.item_embeds], axis=0)
         embeds_list = [embeds]
         
         if 'combine_gcn' in configs['model'] and configs['model']['combine_gcn']:
-            trust_adj = self.get_trust_adj(self.trust_mat, self.adj, embeds)
+            trust_adj = self.get_trust_adj(self.trust_mat_new, self.adj, embeds)
             combined_adj = self._create_combined_adj(self.adj, trust_adj)
             
             for i in range(self.layer_num):
@@ -443,6 +449,7 @@ class IDEA_reroute_LIGHTGCN(BaseModel):
         
         else:
             user_embeds = self.user_embeds
+
             if 'self_gating_unit' in configs['model'] and configs['model']['self_gating_unit']:
                 social_user_embeds = self.self_gating_unit_social(user_embeds)
                 interaction_user_embeds = self.self_gating_unit_interaction(user_embeds)
@@ -455,7 +462,7 @@ class IDEA_reroute_LIGHTGCN(BaseModel):
             interaction_embeds_list = [interaction_embeds]
             
             interaction_adj = self.adj
-            trust_adj = self.get_trust_adj(self.trust_mat, self.adj, embeds)
+            trust_adj = self.get_trust_adj(self.trust_mat_new, self.adj, embeds)
             
             for i in range(self.layer_num):
                 interaction_embeds = self._propagate(interaction_adj, interaction_embeds_list[-1])
@@ -478,6 +485,55 @@ class IDEA_reroute_LIGHTGCN(BaseModel):
         
         self.final_embeds = embeds
         return embeds[:self.user_num], embeds[self.user_num:]
+
+        # if 'combine_gcn' in configs['model'] and configs['model']['combine_gcn']:
+        #     trust_adj = self.get_trust_adj(self.trust_mat, self.adj, embeds)
+        #     combined_adj = self._create_combined_adj(self.adj, trust_adj)
+            
+        #     for i in range(self.layer_num):
+        #         embeds = self._propagate(combined_adj, embeds_list[-1])
+        #         embeds_list.append(embeds)
+            
+        #     embeds = sum(embeds_list)# / len(embeds_list)
+        
+        # else:
+        #     user_embeds = self.user_embeds
+
+        #     if 'self_gating_unit' in configs['model'] and configs['model']['self_gating_unit']:
+        #         social_user_embeds = self.self_gating_unit_social(user_embeds)
+        #         interaction_user_embeds = self.self_gating_unit_interaction(user_embeds)
+        #     else:
+        #         social_user_embeds = user_embeds
+        #         interaction_user_embeds = user_embeds
+        #     social_embeds = social_user_embeds
+        #     interaction_embeds = t.concat([interaction_user_embeds, self.item_embeds], axis=0)
+        #     social_embeds_list = [social_embeds]
+        #     interaction_embeds_list = [interaction_embeds]
+            
+        #     interaction_adj = self.adj
+        #     trust_adj = self.get_trust_adj(self.trust_mat, self.adj, embeds)
+            
+        #     for i in range(self.layer_num):
+        #         interaction_embeds = self._propagate(interaction_adj, interaction_embeds_list[-1])
+        #         interaction_embeds_list.append(interaction_embeds)
+        #         social_embeds = self._propagate(trust_adj, social_embeds_list[-1])
+        #         social_embeds_list.append(social_embeds)
+            
+        #     interaction_embeds = sum(interaction_embeds_list)# / len(interaction_embeds_list)
+        #     social_embeds = sum(social_embeds_list)# / len(social_embeds_list)
+            
+        #     if 'alpha' in configs['model']:
+        #         alpha = configs['model']['alpha']
+        #         user_embeds = alpha * interaction_embeds[:self.user_num] + (1 - alpha) * social_embeds
+        #         item_embeds = interaction_embeds[self.user_num:]
+        #     else:
+        #         user_embeds = interaction_embeds[:self.user_num] + social_embeds # exception
+        #         item_embeds = interaction_embeds[self.user_num:]
+            
+        #     embeds = t.concat([user_embeds, item_embeds], axis=0)
+        
+        # self.final_embeds = embeds
+        # return embeds[:self.user_num], embeds[self.user_num:]
     
     def cal_loss(self, batch_data):
         self.is_training = True
