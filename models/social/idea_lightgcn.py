@@ -254,14 +254,16 @@ class IDEA_LIGHTGCN(BaseModel):
     ######################################################
     def _normalize_trust_matrix(self, trust_mat):
         """
-        TODO(HYEOKTAE-nim): Sparse trust graph를 대칭 정규화.
         Args:
             trust_mat (torch.sparse.FloatTensor): Trust graph matrix (sparse).
 
         Returns:
             torch.sparse.FloatTensor: Normalized trust graph (sparse).
         """
-        return self._normalize_sparse_matrix(trust_mat)
+        if 'socially_aware_normalization' in configs['model'] and configs['model']['socialyl_aware_normalization']:
+            return self._socially_aware_normalize_trust_matrix(trust_mat)
+        else:
+            return self._normalize_sparse_matrix(trust_mat)
     ######################################################
     
     ######################################################
@@ -302,8 +304,6 @@ class IDEA_LIGHTGCN(BaseModel):
         Returns:
             torch.sparse.FloatTensor: trust adjacency matrix with influence relaxation (sparse).
         """
-        if 'socially_aware_normalization' in configs['model'] and configs['model']['socialyl_aware_normalization']:
-            trust_adj = self._socially_aware_normalize_trust_matrix(trust_mat)
         
         # 1-hop propagation을 통해 user 임베딩 계산
         user_embeds_first_gcn = t.sparse.mm(adj, embeds)[:self.user_num]
