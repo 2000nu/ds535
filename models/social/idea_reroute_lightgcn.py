@@ -32,7 +32,8 @@ class IDEA_reroute_LIGHTGCN(BaseModel):
         self.uu_sim = self._compute_adamic_adar(self.trn_mat)
 
         threshold = configs['model']['similarity_threshold']
-        self.trust_mat_new = self._reroute_trust_matrix(self.trust_mat, self.uu_sim, threshold)
+        # self.trust_mat_new = self._reroute_trust_matrix(self.trust_mat, self.uu_sim, threshold)
+        self.trust_mat_new = self.trust_mat.clone()
 
         # what should be set here?
         # self.trust_mat = self.trust_mat_new
@@ -57,14 +58,20 @@ class IDEA_reroute_LIGHTGCN(BaseModel):
             self.pagerank_normalized_trust_matrix = self._pagerank_normalized_trust_matrix(pagerank)
 
 
-    def _reroute_trust_matrix(self, trust_mat, uu_sim, threshold):
+    def _reroute_trust_matrix(self, trust_mat, uu_sim, threshold_quantile):
         device = configs["device"]
 
         S_dense = trust_mat.to_dense().to(device)
         uu_sim_dense = uu_sim.to_dense().to(device)
 
+        connected_sim = uu_sim_dense[S_dense == 1]
+        threshold = connected_sim.quantile(threshold_quantile).item()
+
         # weak connection is connected in S_dense but low uu_sim_dense
         weak_connections = (S_dense == 1) & (uu_sim_dense < threshold)
+
+        # print(f"Number of weak connections: {weak_connections.sum().item()}")
+
         weak_connections = weak_connections.nonzero()
 
         for i, j in weak_connections:
@@ -430,7 +437,9 @@ class IDEA_reroute_LIGHTGCN(BaseModel):
         #### modified
         u_emb = self.user_embeds
         uu_sim = t.mm(u_emb, u_emb.t())
-        self.trust_mat_new = self._reroute_trust_matrix(self.trust_mat, uu_sim, 0.5)
+
+        threshold_quantile = configs['model']['similarity_threshold']
+        self.trust_mat_new = self._reroute_trust_matrix(self.trust_mat, uu_sim, threshold_quantile)
 
         if not self.is_training and self.final_embeds is not None:
             return self.final_embeds[:self.user_num], self.final_embeds[self.user_num:]
