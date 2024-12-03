@@ -8,6 +8,50 @@ from models.loss_utils import cal_bpr_loss, reg_params
 init = nn.init.xavier_uniform_
 uniformInit = nn.init.uniform
 
+def is_symmetric(matrix, tol=1e-8):
+    """
+    Check if a sparse matrix is symmetric.
+
+    Args:
+        matrix (torch.sparse_coo_tensor): The sparse tensor to check.
+        tol (float): Tolerance for comparing floating point values.
+
+    Returns:
+        bool: True if symmetric, False otherwise.
+    """
+    # Ensure the matrix is coalesced
+    matrix = matrix.coalesce()
+    matrix_t = matrix.transpose(0, 1).coalesce()
+
+    # Get indices and values
+    indices = matrix.indices()
+    values = matrix.values()
+    t_indices = matrix_t.indices()
+    t_values = matrix_t.values()
+
+    # Create composite keys for sorting
+    N = matrix.size(0)  # Assuming square matrix
+    orig_keys = indices[0] * N + indices[1]
+    trans_keys = t_indices[0] * N + t_indices[1]
+
+    # Sort the entries
+    orig_sort_order = t.argsort(orig_keys)
+    trans_sort_order = t.argsort(trans_keys)
+
+    # Apply the sorting order
+    orig_indices_sorted = indices[:, orig_sort_order]
+    orig_values_sorted = values[orig_sort_order]
+    trans_indices_sorted = t_indices[:, trans_sort_order]
+    trans_values_sorted = t_values[trans_sort_order]
+
+    # Compare the sorted indices
+    indices_equal = t.equal(orig_indices_sorted, trans_indices_sorted)
+
+    # Compare the sorted values within a tolerance
+    values_close = t.allclose(orig_values_sorted, trans_values_sorted, atol=tol)
+
+    return indices_equal and values_close
+
 class BASELINE_LIGHTGCN(BaseModel):
     def __init__(self, data_handler):
         super(BASELINE_LIGHTGCN, self).__init__(data_handler)
@@ -17,11 +61,14 @@ class BASELINE_LIGHTGCN(BaseModel):
         # Data handler에서 trn_mat과 trust_mat 가져오기
         self.trn_mat = self._coo_to_sparse_tensor(data_handler.trn_mat)
         self.trust_mat = self._coo_to_sparse_tensor(data_handler.trust_mat)
+        # Determine if the social matrix is symmetric
+        is_symmetric_social = is_symmetric(self.trust_mat)
+        print(f"The trust matrix is {'symmetric' if is_symmetric_social else 'asymmetric'}.")
 
         # COO Matrix -> Sparse Tensor 변환 및 정규화
         A = self._create_adj_matrix(self.trn_mat)
-        self.adj = self._normalize_sparse_matrix(A)
-        self.trust_adj = self._normalize_sparse_matrix(self.trust_mat)
+        self.adj = self._normalize_sparse_matrix(A, symmetric=True)  # Interaction matrix is usually symmetric
+        self.trust_adj = self._normalize_sparse_matrix(self.trust_mat, symmetric=is_symmetric_social)
         self.combined_adj = self._create_combined_adj(self.adj, self.trust_adj)
 
         self.layer_num = configs['model']['layer_num']
@@ -69,26 +116,34 @@ class BASELINE_LIGHTGCN(BaseModel):
         
         return A
 
-    def _normalize_sparse_matrix(self, mat):
-        """Sparse Matrix (torch)를 대칭 정규화하는 함수"""
-        # 행 합 계산 (degree)
+    def _normalize_sparse_matrix(self, mat, symmetric=True):
+        """Normalize a sparse matrix (torch) using symmetric or row normalization."""
+        # Calculate degree (sum over rows)
         degree = t.sparse.sum(mat, dim=1).to_dense()
-        degree[degree == 0] = 1e-8
-        degree_inv_sqrt = t.pow(degree, -0.5)
-        degree_inv_sqrt[degree_inv_sqrt == float('inf')] = 0.0  # 무한대 값 처리
+        degree[degree == 0] = 1e-8  # Avoid division by zero
 
-        # 정규화된 행렬 계산: \mathbf{D}^{-1/2} * \mathbf{A} * \mathbf{D}^{-1/2}
-        values = mat.values()
-        indices = mat.indices()
+        if symmetric:
+            degree_inv_sqrt = t.pow(degree, -0.5)
+            degree_inv_sqrt[degree_inv_sqrt == float('inf')] = 0.0  # Handle infinite values
 
-        row = indices[0]
-        col = indices[1]
+            # Symmetric normalization: D^{-1/2} * A * D^{-1/2}
+            values = mat.values()
+            indices = mat.indices()
+            row, col = indices[0], indices[1]
+            norm_values = degree_inv_sqrt[row] * values * degree_inv_sqrt[col]
+        else:
+            degree_inv = 1.0 / degree
+            degree_inv[degree_inv == float('inf')] = 0.0  # Handle infinite values
 
-        # 정규화 값 계산
-        norm_values = degree_inv_sqrt[row] * values * degree_inv_sqrt[col]
+            # Row normalization: D^{-1} * A
+            values = mat.values()
+            indices = mat.indices()
+            row = indices[0]
+            norm_values = degree_inv[row] * values
+
         normalized_mat = t.sparse_coo_tensor(indices, norm_values, mat.size(), device=self.device)
-
         return normalized_mat.coalesce()
+
 
     def _create_combined_adj(self, adj, trust_adj):
         """
@@ -122,6 +177,33 @@ class BASELINE_LIGHTGCN(BaseModel):
         )
 
         return combined_adj.coalesce()
+    
+    # def _create_combined_adj(self, adj, trust_adj):
+    #     num_users = trust_adj.size(0)
+    #     num_items = adj.size(0) - num_users
+
+    #     # Adjust indices for the combined matrix
+    #     trust_indices = trust_adj.indices()
+    #     trust_values = trust_adj.values()
+
+    #     adj_indices = adj.indices()
+    #     adj_values = adj.values()
+
+    #     # Combine indices and values
+    #     combined_row = t.cat([trust_indices[0], adj_indices[0]])
+    #     combined_col = t.cat([trust_indices[1], adj_indices[1]])
+    #     combined_values = t.cat([trust_values, adj_values])
+
+    #     combined_size = (num_users + num_items, num_users + num_items)
+    #     combined_adj = t.sparse_coo_tensor(
+    #         indices=t.stack([combined_row, combined_col]),
+    #         values=combined_values,
+    #         size=combined_size,
+    #         device=self.device
+    #     ).coalesce()
+
+    #     return combined_adj
+
 
     def _propagate(self, combined_adj, embeds):
         """전파 함수"""
