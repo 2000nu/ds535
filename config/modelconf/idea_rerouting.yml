@@ -26,26 +26,26 @@ data:
 
 
 model:
-  name: idea_lightgcn_v2 # case-insensitive
-  layer_num: 3
-  reg_weight: 1.0e-6
+  name: idea_rerouting # case-insensitive
+  layer_num: 2
+  reg_weight: 1.0e-8
   embedding_size: 64
+  similarity_threshold: 0.5 # should be reset to some other value
   
   # --- Options --- #
   # You can toggle between true and false, or exclude an option by commenting it out.
   self_gating_unit: true
-  pagerank: false
+  pagerank: true
   combine_gcn: false
-  alpha: 0.9
+  alpha: 0.8
   cl_weight: 1.0e-5
   sigma: 20 # std for exponential RBF kernel
-  # socially_aware_normalization: true
-  not_normalize: false
 
 tune:
-  enable: true # Whether to enable grid search to search for optimal hyperparameters
-  hyperparameters: [layer_num, reg_weight, cl_weight, alpha] # The name of the hyperparameter
-  layer_num: [2, 3] # Use a list to store the search range
-  reg_weight: [1.0e-6, 1.0e-7, 1.0e-8]
-  cl_weight: [1.0e-5, 1.0e-6, 1.0e-7]
-  alpha: [0.7, 0.8, 0.9]
+  enable: True # Whether to enable grid search to search for optimal hyperparameters
+  hyperparameters: [similarity_threshold] # The name of the hyperparameter
+  similarity_threshold: [  0.0005, 0.001, 0.005, 0.01, 0.05, 0.1] # quantile for similarity threshold
+  # layer_num: [2, 3] # Use a list to store the search range
+  # reg_weight: [1.0e-6, 1.0e-7, 1.0e-8]
+  # cl_weight: [1.0e-5, 1.0e-6, 1.0e-7]
+  # alpha: [0.7, 0.8, 0.9]

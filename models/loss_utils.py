@@ -120,12 +120,3 @@ def js_divergence(p, q, is_prob, reduce='mean'):
 		return res
 	else:
 		raise NotImplementedError
-
-
-"""
-Self-supervised Learning Loss Functions with multiple positive pairs
-"""
-
-######################################################
-
-######################################################

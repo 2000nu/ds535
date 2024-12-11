@@ -1,6 +1,5 @@
 import torch as t
 from torch import nn
-from models.aug_utils import EdgeDrop
 from models.base_model import BaseModel
 from config.configurator import configs
 from models.loss_utils import cal_bpr_loss, reg_params
@@ -52,9 +51,9 @@ def is_symmetric(matrix, tol=1e-8):
 
     return indices_equal and values_close
 
-class BASELINE_LIGHTGCN(BaseModel):
+class LIGHTGCN_SOCIAL(BaseModel):
     def __init__(self, data_handler):
-        super(BASELINE_LIGHTGCN, self).__init__(data_handler)
+        super(LIGHTGCN_SOCIAL, self).__init__(data_handler)
 
         self.device = configs['device']
 
