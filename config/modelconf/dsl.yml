@@ -1,0 +1,48 @@
+optimizer:
+  name: adam
+  lr: 1.0e-3
+  weight_decay: 0.0
+
+train:
+  epoch: 500
+  batch_size: 4096
+  save_model: false
+  loss: pairwise # bpr
+  log_loss: false # whether to log loss
+  test_step: 3 # evaluate per {test_step} epochs
+  patience: 5
+  reproducible: true
+  seed: 2023
+  #pretrain_path: ./checkpoint/xxxx.pth
+  
+
+test:
+  metrics: [recall, ndcg] # choose in {ndcg, recall, precision, mrr}
+  k: [10, 20, 40] # top-k
+  batch_size: 1024 # How many users per batch during validation
+
+data:
+  type: social # choose in {general_cf, multi_behavior, sequential, social}
+  name: yelp
+
+model:
+  name: dsl # case-insensitive
+  embedding_size: 64
+  gnn_layer: 3
+  uugnn_layer: 2
+  dropout_rate: 0.5
+  leaky: 0.5
+  reg_weight: 1.0e-2
+  soc_weight: 1.0e-2
+  sal_weight: 1.0e-3
+
+tune:
+  enable: true # Whether to enable grid search to search for optimal hyperparameters
+  hyperparameters: [gnn_layer, uugnn_layer, reg_weight, sal_weight] # The name of the hyperparameter
+  gnn_layer: [2, 3] # SSLRec set [1,2,3] but we compare this from [2,3]
+  uugnn_layer: [2, 3]
+  reg_weight: [1.0e-2, 1.0e-3, 1.0e-4] # SSLRec set 1.0e-2 but DSL tune from {1e-4, 1e-5, 1-e6, 1e-7}
+  sal_weight: [1.0e-3, 1.0e-4, 1.0e-5] # SSLRec set 1.0e-3 but DSL tune from {1e-4, 1e-5, 1-e6}
+
+
+
