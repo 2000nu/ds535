@@ -176,33 +176,6 @@ class LIGHTGCN_SOCIAL(BaseModel):
         )
 
         return combined_adj.coalesce()
-    
-    # def _create_combined_adj(self, adj, trust_adj):
-    #     num_users = trust_adj.size(0)
-    #     num_items = adj.size(0) - num_users
-
-    #     # Adjust indices for the combined matrix
-    #     trust_indices = trust_adj.indices()
-    #     trust_values = trust_adj.values()
-
-    #     adj_indices = adj.indices()
-    #     adj_values = adj.values()
-
-    #     # Combine indices and values
-    #     combined_row = t.cat([trust_indices[0], adj_indices[0]])
-    #     combined_col = t.cat([trust_indices[1], adj_indices[1]])
-    #     combined_values = t.cat([trust_values, adj_values])
-
-    #     combined_size = (num_users + num_items, num_users + num_items)
-    #     combined_adj = t.sparse_coo_tensor(
-    #         indices=t.stack([combined_row, combined_col]),
-    #         values=combined_values,
-    #         size=combined_size,
-    #         device=self.device
-    #     ).coalesce()
-
-    #     return combined_adj
-
 
     def _propagate(self, combined_adj, embeds):
         """전파 함수"""

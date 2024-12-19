@@ -68,14 +68,7 @@ class IDEA_DENOISING(BaseModel):
         
         pagerank_full = {i: pagerank.get(i, 0.0) for i in range(num_users)} # some users do not have relation in social graph
         pagerank = t.tensor([pagerank_full[i] for i in range(num_users)], dtype=t.float32) #, device=self.device)
-        
-        # sorted_indices = t.argsort(pr, descending=True)
-        # top_3 = sorted_indices[:3]
-        # print(f"Top 3 PageRank scores for {configs['data']['name']} dataset:")
-        # for idx in top_3:
-        #     print(f"Node {idx.item()}: {pr_scores[idx].item():.5f}")
-        # print(f"Average PageRank score: {1/num_users:.5f}")
-        # exit()
+
         
         return pagerank
         
@@ -199,25 +192,6 @@ class IDEA_DENOISING(BaseModel):
         Returns:
             torch.sparse.FloatTensor: Adjusted trust influence matrix (sparse).
         """
-        # user_norm_embeds = user_embeds / t.norm(user_embeds, p=2, dim=1, keepdim=True)
-        # user_cosine_sim = t.matmul(user_norm_embeds, user_norm_embeds.T)
-        # user_norm_sim = (1 + user_cosine_sim) / 2
-        # trust_mat_dense = trust_mat.to_dense()
-        # trust_influence_mat = (trust_mat_dense * user_norm_sim)
-
-        # # influence(u,v) = (1+cos(z_u, z_v))/2 '* exp(-|z_u-z_v|^2/ 2sigma^2 )'
-        # # normalize cosine similarity with exponential RBF kernel
-        # if 'sigma' in configs['model']:
-        #     sigma = configs['model']['sigma']
-        #     sqaured_user_embeds = (user_embeds ** 2).sum(dim=1, keepdim=True)
-        #     intermediate_2 = sqaured_user_embeds + sqaured_user_embeds.T
-        #     intermediate= user_embeds @ user_embeds.T
-        #     kernel_mat = t.exp(-(intermediate_2 - 2 * intermediate)) / (2*sigma**2)
-        #     # kernel_mat = t.exp(-kernel_mat / (2 * sigma ** 2))
-        #     trust_influence_mat *= kernel_mat
-
-        # trust_influence_mat = trust_influence_mat.to_sparse()
-        # return trust_influence_mat
         # 사용자 임베딩 정규화
         user_norm_embeds = user_embeds / t.norm(user_embeds, p=2, dim=1, keepdim=True)
 
@@ -231,7 +205,6 @@ class IDEA_DENOISING(BaseModel):
         cosine_sim = (user_norm_embeds[user_i] * user_norm_embeds[user_j]).sum(dim=1)
         user_norm_sim = (1 + cosine_sim) / 2  # 코사인 유사도를 [0, 1]로 정규화
 
-        # influence(u,v) = (1+cos(z_u, z_v))/2 * exp(-|z_u-z_v|^2 / (2*sigma^2))
         if 'sigma' in configs['model']:
             sigma = configs['model']['sigma']
             squared_user_embeds = (user_embeds ** 2).sum(dim=1)
@@ -335,6 +308,11 @@ class IDEA_DENOISING(BaseModel):
     
     
     def forward(self):
+        """
+        전파(Propagation) 단계 수행
+        - 학습 중이 아니고, 이미 계산된 임베딩이 존재하면 반환
+        - 그렇지 않으면 입력 임베딩을 결합하여 GCN 레이어를 통해 전파
+        """
         if not self.is_training and self.final_embeds is not None:
             return self.final_embeds[:self.user_num], self.final_embeds[self.user_num:]
         embeds = t.concat([self.user_embeds, self.item_embeds], axis=0)
@@ -348,7 +326,7 @@ class IDEA_DENOISING(BaseModel):
                 embeds = self._propagate(combined_adj, embeds_list[-1])
                 embeds_list.append(embeds)
             
-            embeds = sum(embeds_list)# / len(embeds_list)
+            embeds = sum(embeds_list) # / len(embeds_list)
         
         else:
             user_embeds = self.user_embeds

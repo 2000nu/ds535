@@ -68,9 +68,6 @@ class IDEA_REROUTING(BaseModel):
 
         # weak connection is connected in S_dense but low uu_sim_dense
         weak_connections = (S_dense == 1) & (uu_sim_dense < threshold)
-
-        # print(f"Number of weak connections: {weak_connections.sum().item()}")
-
         weak_connections = weak_connections.nonzero()
 
         for i, j in weak_connections:
@@ -202,15 +199,6 @@ class IDEA_REROUTING(BaseModel):
         
         pagerank_full = {i: pagerank.get(i, 0.0) for i in range(num_users)} # some users do not have relation in social graph
         pagerank = t.tensor([pagerank_full[i] for i in range(num_users)], dtype=t.float32, device=self.device)
-        
-        # sorted_indices = t.argsort(pr, descending=True)
-        # top_3 = sorted_indices[:3]
-        # print(f"Top 3 PageRank scores for {configs['data']['name']} dataset:")
-        # for idx in top_3:
-        #     print(f"Node {idx.item()}: {pr_scores[idx].item():.5f}")
-        # print(f"Average PageRank score: {1/num_users:.5f}")
-        # exit()
-        
         return pagerank
         
     ######################################################
@@ -493,55 +481,6 @@ class IDEA_REROUTING(BaseModel):
         
         self.final_embeds = embeds
         return embeds[:self.user_num], embeds[self.user_num:]
-
-        # if 'combine_gcn' in configs['model'] and configs['model']['combine_gcn']:
-        #     trust_adj = self.get_trust_adj(self.trust_mat, self.adj, embeds)
-        #     combined_adj = self._create_combined_adj(self.adj, trust_adj)
-            
-        #     for i in range(self.layer_num):
-        #         embeds = self._propagate(combined_adj, embeds_list[-1])
-        #         embeds_list.append(embeds)
-            
-        #     embeds = sum(embeds_list)# / len(embeds_list)
-        
-        # else:
-        #     user_embeds = self.user_embeds
-
-        #     if 'self_gating_unit' in configs['model'] and configs['model']['self_gating_unit']:
-        #         social_user_embeds = self.self_gating_unit_social(user_embeds)
-        #         interaction_user_embeds = self.self_gating_unit_interaction(user_embeds)
-        #     else:
-        #         social_user_embeds = user_embeds
-        #         interaction_user_embeds = user_embeds
-        #     social_embeds = social_user_embeds
-        #     interaction_embeds = t.concat([interaction_user_embeds, self.item_embeds], axis=0)
-        #     social_embeds_list = [social_embeds]
-        #     interaction_embeds_list = [interaction_embeds]
-            
-        #     interaction_adj = self.adj
-        #     trust_adj = self.get_trust_adj(self.trust_mat, self.adj, embeds)
-            
-        #     for i in range(self.layer_num):
-        #         interaction_embeds = self._propagate(interaction_adj, interaction_embeds_list[-1])
-        #         interaction_embeds_list.append(interaction_embeds)
-        #         social_embeds = self._propagate(trust_adj, social_embeds_list[-1])
-        #         social_embeds_list.append(social_embeds)
-            
-        #     interaction_embeds = sum(interaction_embeds_list)# / len(interaction_embeds_list)
-        #     social_embeds = sum(social_embeds_list)# / len(social_embeds_list)
-            
-        #     if 'alpha' in configs['model']:
-        #         alpha = configs['model']['alpha']
-        #         user_embeds = alpha * interaction_embeds[:self.user_num] + (1 - alpha) * social_embeds
-        #         item_embeds = interaction_embeds[self.user_num:]
-        #     else:
-        #         user_embeds = interaction_embeds[:self.user_num] + social_embeds # exception
-        #         item_embeds = interaction_embeds[self.user_num:]
-            
-        #     embeds = t.concat([user_embeds, item_embeds], axis=0)
-        
-        # self.final_embeds = embeds
-        # return embeds[:self.user_num], embeds[self.user_num:]
     
     def cal_loss(self, batch_data):
         self.is_training = True
